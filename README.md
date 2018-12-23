@@ -28,10 +28,10 @@ Follow the instructions in the terminal
 "poster.aspect": "all"
 ```
 
-all:  All available image formats are written to the XML file. This feature may be supported by Emby soon.
-2x3:  Poster is written in 2x3 format in the XML file (Plex image format), 
-4x3:  Poster is written in 4x3 format in the XML file
-16x9: Poster is written in 16x9 format in the XML file
+- all:  All available image formats are written to the XML file. This feature may be supported by Emby soon.
+- 2x3:  Poster is written in 2x3 format in the XML file (Plex image format), 
+- 4x3:  Poster is written in 4x3 format in the XML file
+- 16x9: Poster is written in 16x9 format in the XML file
 
 ### Number of days for the program data (can be changed). Maximum 14 days
 
