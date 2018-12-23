@@ -1,271 +1,276 @@
 package src
 
 import (
-  "bytes"
-  "io/ioutil"
-  "encoding/json"
-  "errors"
-  "fmt"
-  "net/http"
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 )
 
-const BaseURL = "https://json.schedulesdirect.org/20141201/"
-var   Token string
+const BaseURL = "https://json.schedulesdirect.org/20141201/" // BaseURL: Request URL
 
-func sdLogin(username, password string)(err error) {
-  
-  var data = structToJson(SD_Login{Username: username, Password: password})
+var Token string // Token: SD login token
 
-  err, body := postDataFromSD(data, "token")
-  if err != nil {
-    return
-  }
+func sdLogin(username, password string) (err error) {
 
-  var response SD_Token
-  json.Unmarshal(body, &response)
-  Token = response.Token
+	var data = structToJson(SD_Login{Username: username, Password: password})
 
-  return
+	body, err := postDataFromSD(data, "token")
+	if err != nil {
+		return
+	}
+
+	var response SD_Token
+	json.Unmarshal(body, &response)
+	Token = response.Token
+
+	return
 }
 
-func sdStatus()(err error, response SD_Status) {
-  
-  err, body := postDataFromSD("{}", "status")
+func sdStatus() (response SD_Status, err error) {
 
-  if err != nil {
-    return
-  }
+	body, err := postDataFromSD("{}", "status")
 
-  json.Unmarshal(body, &response)
+	if err != nil {
+		return
+	}
 
-  logInfo("SD", fmt.Sprintf("Account expires: %s", response.Account.Expires))
-  logInfo("SD", fmt.Sprintf("Lineups: %d", len(response.Lineups)))
-  logInfo("SD", fmt.Sprintf("Max lineups: %d", response.Account.MaxLineups))
-  logInfo("SD", fmt.Sprintf("System status: %s", response.SystemStatus[0].Status))
-  logInfo("SD", fmt.Sprintf("System message: %s", response.SystemStatus[0].Message))
+	json.Unmarshal(body, &response)
 
-  return
+	logInfo("SD", fmt.Sprintf("Account expires: %s", response.Account.Expires))
+	logInfo("SD", fmt.Sprintf("Lineups: %d", len(response.Lineups)))
+	logInfo("SD", fmt.Sprintf("Max lineups: %d", response.Account.MaxLineups))
+	logInfo("SD", fmt.Sprintf("System status: %s", response.SystemStatus[0].Status))
+	logInfo("SD", fmt.Sprintf("System message: %s", response.SystemStatus[0].Message))
+
+	return
 }
 
-func sdCountries()(err error, response SD_Countries ) {
+func sdCountries() (response SD_Countries, err error) {
 
-  err, body := postDataFromSD("", "countries")
+	body, err := postDataFromSD("", "countries")
 
-  if err != nil {
-    return
-  }
+	if err != nil {
+		return
+	}
 
-  json.Unmarshal(body, &response)
+	json.Unmarshal(body, &response)
 
-  return
+	return
 }
 
-func sdHeadends(lineup string)(err error, response SD_Headends) {
+func sdHeadends(lineup string) (response SD_Headends, err error) {
 
-  err, body := postDataFromSD(lineup, "headends")
+	body, err := postDataFromSD(lineup, "headends")
 
-  if err != nil {
-    return
-  }
+	if err != nil {
+		return
+	}
 
-  json.Unmarshal(body, &response)
+	json.Unmarshal(body, &response)
 
-  return
+	return
 }
 
-func sdAddLineup(lineup string)(err error) {
+func sdAddLineup(lineup string) (err error) {
 
-  err, _ = postDataFromSD(lineup, "lineups")
-  return
+	_, err = postDataFromSD(lineup, "lineups")
+	return
 }
 
-func sdRemoveLineup(lineup string)(err error) {
+func sdRemoveLineup(lineup string) (err error) {
 
-  err, _ = postDataFromSD(lineup, "delete")
-  
-  return
+	_, err = postDataFromSD(lineup, "delete")
+
+	return
 }
 
-func sdChannelList(lineup string)(err error, response SD_ChannelList) {
+func sdChannelList(lineup string) (response SD_ChannelList, err error) {
 
-  err, body := postDataFromSD(lineup, "channelList")
+	body, err := postDataFromSD(lineup, "channelList")
 
-  if err != nil {
-    return
-  }
+	if err != nil {
+		return
+	}
 
-  json.Unmarshal(body, &response)
+	json.Unmarshal(body, &response)
 
-  return
+	return
 }
 
 // Schedules
-func sdGetSchedules(data string)(err error, response SD_Schedules) {
+func sdGetSchedules(data string) (response SD_Schedules, err error) {
 
-  err, body := postDataFromSD(data, "schedules")
+	body, err := postDataFromSD(data, "schedules")
 
-  if err != nil {
-    return
-  }
+	if err != nil {
+		return
+	}
 
-  json.Unmarshal(body, &response)
+	json.Unmarshal(body, &response)
 
-  return
+	return
 }
 
-func sdGetPrograms(data string)(err error, response SD_Programs) {
+func sdGetPrograms(data string) (response SD_Programs, err error) {
 
-  err, body := postDataFromSD(data, "programs")
+	body, err := postDataFromSD(data, "programs")
 
-  if err != nil {
-    return
-  }
+	if err != nil {
+		return
+	}
 
-  err, body = gUnzipData(body)
+	body, err = gUnzipData(body)
 
-  if err != nil {
-    return
-  }
+	if err != nil {
+		return
+	}
 
-  json.Unmarshal(body, &response)
+	json.Unmarshal(body, &response)
 
-  return
+	return
 }
 
-func sdGetMetadata(data string)(err error, response SD_Metadata) {
+func sdGetMetadata(data string) (response SD_Metadata, err error) {
 
-  err, body := postDataFromSD(data, "matadata")
+	body, err := postDataFromSD(data, "matadata")
 
-  if err != nil {
-    return
-  }
+	if err != nil {
+		return
+	}
 
-  json.Unmarshal(body, &response)
+	json.Unmarshal(body, &response)
 
-  return
+	return
 }
 
+func postDataFromSD(data, reqType string) (body []byte, err error) {
 
-func postDataFromSD(data, reqType string)(err error, body []byte) {
+	var url, connectType string
 
-  var url, connectType string
+	switch reqType {
 
-  switch(reqType) {
+	case "token":
+		url = BaseURL + "token"
+		connectType = "POST"
 
-    case "token":   
-      url = BaseURL + "token"
-      connectType = "POST"
+	case "status":
+		url = BaseURL + "status"
+		data = "{}"
+		connectType = "GET"
 
-    case "status":  url = BaseURL + "status"
-      data = "{}"
-      connectType = "GET"
+	case "delete":
+		url = BaseURL + "lineups/" + data
+		connectType = "DELETE"
 
-    case "delete":  url = BaseURL + "lineups/" + data
-      connectType = "DELETE"
+	case "countries":
+		url = BaseURL + "available/countries"
+		data = "{}"
+		connectType = "GET"
 
-    case "countries":
-      url = BaseURL + "available/countries"
-      data = "{}"
-      connectType = "GET"
-    
-    case "headends":  
-      url = BaseURL + "headends" + data
-      data = "{}"
-      connectType = "GET"
+	case "headends":
+		url = BaseURL + "headends" + data
+		data = "{}"
+		connectType = "GET"
 
-    case "lineups":  
-      url = BaseURL + "lineups/" + data
-      data = "{}"
-      connectType = "PUT"
+	case "lineups":
+		url = BaseURL + "lineups/" + data
+		data = "{}"
+		connectType = "PUT"
 
-    case "channelList":  
-      url = BaseURL + "lineups/" + data
-      data = "{}"
-      connectType = "GET"
+	case "channelList":
+		url = BaseURL + "lineups/" + data
+		data = "{}"
+		connectType = "GET"
 
-    case "schedules":  
-      url = BaseURL + "schedules"
-      connectType = "POST"
+	case "schedules":
+		url = BaseURL + "schedules"
+		connectType = "POST"
 
-    case "programs":  
-      url = BaseURL + "programs"
-      connectType = "POST"
+	case "programs":
+		url = BaseURL + "programs"
+		connectType = "POST"
 
+	case "matadata":
+		url = BaseURL + "metadata/programs"
+		connectType = "POST"
 
-    case "matadata":  
-      url = BaseURL + "metadata/programs"
-      connectType = "POST"
+	}
 
-  }
-  
-  logInfo("URL", url)
+	logInfo("URL", url)
 
-  var jsonStr = []byte(data)
-  req, err := http.NewRequest(connectType, url, bytes.NewBuffer(jsonStr))
+	var jsonStr = []byte(data)
+	req, err := http.NewRequest(connectType, url, bytes.NewBuffer(jsonStr))
 
-  if len(Token) > 0 {
-    req.Header.Set("Token", Token)
-  }
-  
-  if reqType == "programs" {
-    req.Header.Set("Accept-Encoding", "deflate,gzip")
-  }
-  
-  req.Header.Set("User-Agent", AppName)
-  req.Header.Set("X-Custom-Header", AppName)
-  req.Header.Set("Content-Type", "application/json")
+	if len(Token) > 0 {
+		req.Header.Set("Token", Token)
+	}
 
-  client := &http.Client{}
-  resp, err := client.Do(req)
+	if reqType == "programs" {
+		req.Header.Set("Accept-Encoding", "deflate,gzip")
+	}
 
-  if err != nil {
+	req.Header.Set("User-Agent", AppName)
+	req.Header.Set("X-Custom-Header", AppName)
+	req.Header.Set("Content-Type", "application/json")
 
-    checkErr(err, true)
-    return
+	client := &http.Client{}
+	resp, err := client.Do(req)
 
-  }
+	if err != nil {
 
-  defer resp.Body.Close()
+		checkErr(err, true)
+		return
 
-  body, _ = ioutil.ReadAll(resp.Body)
-  
-  switch(reqType) {
-  
-    case "headends": return
-    case "schedules": return
-    case "programs": return
-    case "matadata": return
-  
-  }
+	}
 
-  var response SD_Status
-  err = json.Unmarshal(body, &response)
-  
-  if err != nil {
-    return
-  }
-  
-  err = checkTheServerStatus(response)
+	defer resp.Body.Close()
 
-  return
+	body, _ = ioutil.ReadAll(resp.Body)
+
+	switch reqType {
+
+	case "headends":
+		return
+	case "schedules":
+		return
+	case "programs":
+		return
+	case "matadata":
+		return
+
+	}
+
+	var response SD_Status
+	err = json.Unmarshal(body, &response)
+
+	if err != nil {
+		return
+	}
+
+	err = checkTheServerStatus(response)
+
+	return
 }
 
-func checkTheServerStatus(response SD_Status)(err error) {
+func checkTheServerStatus(response SD_Status) (err error) {
 
-  switch(response.Code) {
+	switch response.Code {
 
-    case 0:
-      if len(response.Message) > 0 {
-        logInfo("SD", response.Message)
-      }
-      break
+	case 0:
+		if len(response.Message) > 0 {
+			logInfo("SD", response.Message)
+		}
+		break
 
-    default: 
-      logInfo("SD", response.Message)
-      err = errors.New(response.Message)
-      break
+	default:
+		logInfo("SD", response.Message)
+		err = errors.New(response.Message)
+		break
 
-  }
+	}
 
-  return
+	return
 }

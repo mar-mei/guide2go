@@ -3,4 +3,5 @@ build.sh
 guide2go
 guide2go.sublime-project
 guide2go.sublime-workspace
+guide2go.code-workspace
 dev
