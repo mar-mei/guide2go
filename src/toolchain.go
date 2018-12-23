@@ -23,18 +23,18 @@ func stringToSHA1(str string) (strSHA1 string) {
 	return
 }
 
-func getFilenameFromPath(path string) string {
+func getFilenameFromPath(path string) (file string) {
 
-	file := filepath.Base(path)
+	file = filepath.Base(path)
 
-	return file
+	return
 }
 
-func getPlatformPath(path string) string {
+func getPlatformPath(path string) (newPath string) {
 
-	var newPath = filepath.Dir(path) + string(os.PathSeparator)
+	newPath = filepath.Dir(path) + string(os.PathSeparator)
 
-	return newPath
+	return
 }
 
 func removeFilenameExtension(basename string) (filename string) {
@@ -62,31 +62,32 @@ func checkFile(filename string) (err error) {
 	return
 }
 
-func mapToJson(tmpMap interface{}) string {
+func mapToJson(tmpMap interface{}) (jsonString string) {
 
-	jsonString, err := json.MarshalIndent(tmpMap, "", "  ")
+	jsonString = "{}"
+	jsonByte, err := json.MarshalIndent(tmpMap, "", "  ")
 	if err != nil {
-		return "{}"
+		return
 	}
 
-	return string(jsonString)
+	jsonString = string(jsonByte)
+	return
 }
 
-func saveMapToJsonFile(file string, tmpMap interface{}) error {
+func saveMapToJsonFile(file string, tmpMap interface{}) (err error) {
 
 	var filename = getPlatformFile(file)
 	jsonString, err := json.MarshalIndent(tmpMap, "", "  ")
-
 	if err != nil {
-		return err
+		return
 	}
 
 	err = ioutil.WriteFile(filename, []byte(jsonString), 0644)
 	if err != nil {
-		return err
+		return
 	}
 
-	return nil
+	return
 }
 
 func loadJsonFileToMap(file string) (tmpMap map[string]interface{}, err error) {
