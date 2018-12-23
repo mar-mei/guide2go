@@ -1,0 +1,271 @@
+package src
+
+import (
+  "bytes"
+  "io/ioutil"
+  "encoding/json"
+  "errors"
+  "fmt"
+  "net/http"
+)
+
+const BaseURL = "https://json.schedulesdirect.org/20141201/"
+var   Token string
+
+func sdLogin(username, password string)(err error) {
+  
+  var data = structToJson(SD_Login{Username: username, Password: password})
+
+  err, body := postDataFromSD(data, "token")
+  if err != nil {
+    return
+  }
+
+  var response SD_Token
+  json.Unmarshal(body, &response)
+  Token = response.Token
+
+  return
+}
+
+func sdStatus()(err error, response SD_Status) {
+  
+  err, body := postDataFromSD("{}", "status")
+
+  if err != nil {
+    return
+  }
+
+  json.Unmarshal(body, &response)
+
+  logInfo("SD", fmt.Sprintf("Account expires: %s", response.Account.Expires))
+  logInfo("SD", fmt.Sprintf("Lineups: %d", len(response.Lineups)))
+  logInfo("SD", fmt.Sprintf("Max lineups: %d", response.Account.MaxLineups))
+  logInfo("SD", fmt.Sprintf("System status: %s", response.SystemStatus[0].Status))
+  logInfo("SD", fmt.Sprintf("System message: %s", response.SystemStatus[0].Message))
+
+  return
+}
+
+func sdCountries()(err error, response SD_Countries ) {
+
+  err, body := postDataFromSD("", "countries")
+
+  if err != nil {
+    return
+  }
+
+  json.Unmarshal(body, &response)
+
+  return
+}
+
+func sdHeadends(lineup string)(err error, response SD_Headends) {
+
+  err, body := postDataFromSD(lineup, "headends")
+
+  if err != nil {
+    return
+  }
+
+  json.Unmarshal(body, &response)
+
+  return
+}
+
+func sdAddLineup(lineup string)(err error) {
+
+  err, _ = postDataFromSD(lineup, "lineups")
+  return
+}
+
+func sdRemoveLineup(lineup string)(err error) {
+
+  err, _ = postDataFromSD(lineup, "delete")
+  
+  return
+}
+
+func sdChannelList(lineup string)(err error, response SD_ChannelList) {
+
+  err, body := postDataFromSD(lineup, "channelList")
+
+  if err != nil {
+    return
+  }
+
+  json.Unmarshal(body, &response)
+
+  return
+}
+
+// Schedules
+func sdGetSchedules(data string)(err error, response SD_Schedules) {
+
+  err, body := postDataFromSD(data, "schedules")
+
+  if err != nil {
+    return
+  }
+
+  json.Unmarshal(body, &response)
+
+  return
+}
+
+func sdGetPrograms(data string)(err error, response SD_Programs) {
+
+  err, body := postDataFromSD(data, "programs")
+
+  if err != nil {
+    return
+  }
+
+  err, body = gUnzipData(body)
+
+  if err != nil {
+    return
+  }
+
+  json.Unmarshal(body, &response)
+
+  return
+}
+
+func sdGetMetadata(data string)(err error, response SD_Metadata) {
+
+  err, body := postDataFromSD(data, "matadata")
+
+  if err != nil {
+    return
+  }
+
+  json.Unmarshal(body, &response)
+
+  return
+}
+
+
+func postDataFromSD(data, reqType string)(err error, body []byte) {
+
+  var url, connectType string
+
+  switch(reqType) {
+
+    case "token":   
+      url = BaseURL + "token"
+      connectType = "POST"
+
+    case "status":  url = BaseURL + "status"
+      data = "{}"
+      connectType = "GET"
+
+    case "delete":  url = BaseURL + "lineups/" + data
+      connectType = "DELETE"
+
+    case "countries":
+      url = BaseURL + "available/countries"
+      data = "{}"
+      connectType = "GET"
+    
+    case "headends":  
+      url = BaseURL + "headends" + data
+      data = "{}"
+      connectType = "GET"
+
+    case "lineups":  
+      url = BaseURL + "lineups/" + data
+      data = "{}"
+      connectType = "PUT"
+
+    case "channelList":  
+      url = BaseURL + "lineups/" + data
+      data = "{}"
+      connectType = "GET"
+
+    case "schedules":  
+      url = BaseURL + "schedules"
+      connectType = "POST"
+
+    case "programs":  
+      url = BaseURL + "programs"
+      connectType = "POST"
+
+
+    case "matadata":  
+      url = BaseURL + "metadata/programs"
+      connectType = "POST"
+
+  }
+  
+  logInfo("URL", url)
+
+  var jsonStr = []byte(data)
+  req, err := http.NewRequest(connectType, url, bytes.NewBuffer(jsonStr))
+
+  if len(Token) > 0 {
+    req.Header.Set("Token", Token)
+  }
+  
+  if reqType == "programs" {
+    req.Header.Set("Accept-Encoding", "deflate,gzip")
+  }
+  
+  req.Header.Set("User-Agent", AppName)
+  req.Header.Set("X-Custom-Header", AppName)
+  req.Header.Set("Content-Type", "application/json")
+
+  client := &http.Client{}
+  resp, err := client.Do(req)
+
+  if err != nil {
+
+    checkErr(err, true)
+    return
+
+  }
+
+  defer resp.Body.Close()
+
+  body, _ = ioutil.ReadAll(resp.Body)
+  
+  switch(reqType) {
+  
+    case "headends": return
+    case "schedules": return
+    case "programs": return
+    case "matadata": return
+  
+  }
+
+  var response SD_Status
+  err = json.Unmarshal(body, &response)
+  
+  if err != nil {
+    return
+  }
+  
+  err = checkTheServerStatus(response)
+
+  return
+}
+
+func checkTheServerStatus(response SD_Status)(err error) {
+
+  switch(response.Code) {
+
+    case 0:
+      if len(response.Message) > 0 {
+        logInfo("SD", response.Message)
+      }
+      break
+
+    default: 
+      logInfo("SD", response.Message)
+      err = errors.New(response.Message)
+      break
+
+  }
+
+  return
+}
