@@ -1,4 +1,4 @@
-# Short instructions - Version 1.0.2
+# Short instructions - Version 1.0.3
 
 CLI parameter:
 guide2go -h

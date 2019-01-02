@@ -14,7 +14,7 @@ import (
 )
 
 const AppName = "guide2go"
-const Version = "0.1.2"
+const Version = "1.0.3"
 
 var Config = make(map[string]interface{}) // Configuartion Map
 var Cache = make(map[string]interface{})  // Cache Map
@@ -568,34 +568,41 @@ func GetData(configFile string) {
 	}
 
 	var getChannels = func(response SD_Status) (err error) {
-		var myChannels = Config["channels"].(map[string]interface{})
-		var channels = make(map[string]interface{})
 
-		for _, r := range response.Lineups {
+		if _, ok := Config["channels"].(map[string]interface{}); ok {
 
-			channelList, err := sdChannelList(r.Lineup)
-			if err != nil {
-				return err
-			}
+			var myChannels = Config["channels"].(map[string]interface{})
+			var channels = make(map[string]interface{})
 
-			for _, c := range channelList.Stations {
+			for _, r := range response.Lineups {
 
-				if _, ok := myChannels[c.StationID]; ok {
+				channelList, err := sdChannelList(r.Lineup)
+				if err != nil {
+					return err
+				}
 
-					var tmp = make(map[string]interface{})
-					tmp["name"] = c.Name
-					tmp["stationID"] = c.StationID
-					tmp["callsign"] = c.Callsign
-					tmp["logoURL"] = c.Logo.URL
-					tmp["logoHeight"] = c.Logo.Height
-					tmp["logoWidth"] = c.Logo.Width
+				for _, c := range channelList.Stations {
 
-					channels[c.StationID] = tmp
-					Cache["channels"] = channels
+					if _, ok := myChannels[c.StationID]; ok {
+
+						var tmp = make(map[string]interface{})
+						tmp["name"] = c.Name
+						tmp["stationID"] = c.StationID
+						tmp["callsign"] = c.Callsign
+						tmp["logoURL"] = c.Logo.URL
+						tmp["logoHeight"] = c.Logo.Height
+						tmp["logoWidth"] = c.Logo.Width
+
+						channels[c.StationID] = tmp
+						Cache["channels"] = channels
+
+					}
 
 				}
 
 			}
+
+		} else {
 
 		}
 
@@ -926,7 +933,6 @@ func CleanUpTheCache(configFile string) {
 			} else {
 
 				removeProgramFromCache("programs", programID)
-				removeProgramFromCache("md5", programID)
 				removeProgramFromCache("metadata", programID[0:10])
 
 			}
@@ -946,19 +952,18 @@ func CleanUpTheCache(configFile string) {
 }
 
 func loadCachFile() (err error) {
-
 	if cacheFile, ok := Config["file.cache"].(string); ok {
+
 		cache, err := loadJsonFileToMap(cacheFile)
 		if err != nil {
 			Cache = make(map[string]interface{})
+		} else {
+			Cache = cache
 		}
 
-		Cache = cache
-
-		var needKeys = []string{"schedules", "md5", "programs", "metadata", "channels"}
+		var needKeys = []string{"schedules", "programs", "metadata", "channels"}
 		for _, key := range needKeys {
-
-			if _, ok := cache[key]; ok {
+			if _, ok := Cache[key].(map[string]interface{}); ok {
 				// Key already available
 			} else {
 				Cache[key] = make(map[string]interface{})
