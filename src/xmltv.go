@@ -212,6 +212,11 @@ func getProgrammData(stationID string) (err error, tmp_xmltv Xmltv) {
 
 			}
 
+			// Live
+			if p.LiveTapeDelay == "Live" {
+				program.Live = &Live{Value: ""}
+			}
+
 			tmp_xmltv.Programs = append(tmp_xmltv.Programs, program)
 		}
 
@@ -420,7 +425,7 @@ func getMetadateStruct(programmID string) (err error, thisMetadata G2G_Metadata)
 
 	} else {
 
-		err = errors.New(fmt.Sprintf("No matadata information found [%s]", programmID))
+		err = errors.New(fmt.Sprintf("No metadata information found [%s]", programmID))
 
 	}
 

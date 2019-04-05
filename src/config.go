@@ -14,7 +14,7 @@ import (
 )
 
 const AppName = "guide2go"
-const Version = "1.0.3"
+const Version = "1.0.4"
 
 var Config = make(map[string]interface{}) // Configuartion Map
 var Cache = make(map[string]interface{})  // Cache Map
@@ -180,7 +180,7 @@ func CreateModifyConfigurationFile(configFile string) {
 
 	}
 
-	// Remove liniup
+	// Remove lineup
 	var removeLineup = func(response SD_Status) (err error) {
 
 		showHeadline(104)
@@ -632,7 +632,7 @@ func GetData(configFile string) {
 		// Get all stationsIDs from config file
 		if v, ok := Config["channels"].(map[string]interface{}); ok {
 
-			for key, _ := range v {
+			for key := range v {
 				myChannels = append(myChannels, key)
 			}
 

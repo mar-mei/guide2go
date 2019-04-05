@@ -135,7 +135,7 @@ func sdGetPrograms(data string) (response SD_Programs, err error) {
 
 func sdGetMetadata(data string) (response SD_Metadata, err error) {
 
-	body, err := postDataFromSD(data, "matadata")
+	body, err := postDataFromSD(data, "metadata")
 
 	if err != nil {
 		return
@@ -193,7 +193,7 @@ func postDataFromSD(data, reqType string) (body []byte, err error) {
 		url = BaseURL + "programs"
 		connectType = "POST"
 
-	case "matadata":
+	case "metadata":
 		url = BaseURL + "metadata/programs"
 		connectType = "POST"
 
@@ -238,7 +238,7 @@ func postDataFromSD(data, reqType string) (body []byte, err error) {
 		return
 	case "programs":
 		return
-	case "matadata":
+	case "metadata":
 		return
 
 	}
