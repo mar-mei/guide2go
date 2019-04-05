@@ -4,7 +4,7 @@ To create the binary, [Go](https://golang.org/ "Golang") must be installed
 go build guide2go.go
 ```
 
-# Short instructions - Version 1.0.3
+# Short instructions - Version 1.0.4
 
 CLI parameter:
 guide2go -h
