@@ -14,7 +14,7 @@ import (
 )
 
 const AppName = "guide2go"
-const Version = "1.0.4"
+const Version = "1.0.5"
 
 var Config = make(map[string]interface{}) // Configuartion Map
 var Cache = make(map[string]interface{})  // Cache Map
@@ -701,7 +701,7 @@ func GetData(configFile string) {
 
 		var schedules = Cache["schedules"].(map[string]interface{})
 
-		for key, _ := range schedules {
+		for key := range schedules {
 
 			jsonString := mapToJson(schedules[key])
 			var g2g_Programs G2G_Programs
@@ -927,7 +927,7 @@ func CleanUpTheCache(configFile string) {
 
 	if program, ok := Cache["programs"].(map[string]interface{}); ok {
 
-		for programID, _ := range program {
+		for programID := range program {
 			if _, ok := usedIDs[programID]; ok {
 				// Key already available
 			} else {
