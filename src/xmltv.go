@@ -316,22 +316,26 @@ func getEpisodeNumSystem(programmID string) (err error, program Program) {
 
 		}
 
-		switch programmID[0:2] {
-
-		case "EP":
-			value = programmID[0:10] + "." + programmID[10:]
-
-		case "SH", "MV":
-			value = programmID[0:10] + ".0000"
-
-		default:
-			value = programmID
-		}
-
-		program.EpisodeNums = append(program.EpisodeNums, EpisodeNum{Value: value, System: "dd_progid"})
-
 		if seaseon > 0 && episode > 0 {
 			program.EpisodeNums = append(program.EpisodeNums, EpisodeNum{Value: fmt.Sprintf("S%d E%d", seaseon, episode), System: "onscreen"})
+		}
+
+		if len(program.EpisodeNums) == 0 {
+
+			switch programmID[0:2] {
+
+			case "EP":
+				value = programmID[0:10] + "." + programmID[10:]
+
+			case "SH", "MV":
+				value = programmID[0:10] + ".0000"
+
+			default:
+				value = programmID
+			}
+
+			program.EpisodeNums = append(program.EpisodeNums, EpisodeNum{Value: value, System: "dd_progid"})
+
 		}
 
 		if len(p.OriginalAirDate) > 0 {

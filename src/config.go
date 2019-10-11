@@ -14,7 +14,7 @@ import (
 )
 
 const AppName = "guide2go"
-const Version = "1.0.5"
+const Version = "1.0.6"
 
 var Config = make(map[string]interface{}) // Configuartion Map
 var Cache = make(map[string]interface{})  // Cache Map
