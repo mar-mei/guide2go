@@ -1,7 +1,6 @@
 package src
 
 import (
-	"bytes"
 	"compress/gzip"
 	"crypto/sha1"
 	"encoding/json"
@@ -129,23 +128,11 @@ func writeByteToFile(file string, data []byte) error {
 	return err
 }
 
-func gUnzipData(data []byte) (res []byte, err error) {
+func gUnzipData(data io.Reader) (res io.Reader, err error) {
 
-	b := bytes.NewBuffer(data)
-
-	var r io.Reader
-	r, err = gzip.NewReader(b)
+	res, err = gzip.NewReader(data)
 	if err != nil {
 		return
 	}
-
-	var resB bytes.Buffer
-	_, err = resB.ReadFrom(r)
-	if err != nil {
-		return
-	}
-
-	res = resB.Bytes()
-
 	return
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 )
@@ -23,7 +24,7 @@ func sdLogin(username, password string) (err error) {
 	}
 
 	var response SD_Token
-	json.Unmarshal(body, &response)
+	json.Unmarshal(body.([]byte), &response)
 	Token = response.Token
 
 	return
@@ -37,7 +38,7 @@ func sdStatus() (response SD_Status, err error) {
 		return
 	}
 
-	json.Unmarshal(body, &response)
+	json.Unmarshal(body.([]byte), &response)
 
 	logInfo("SD", fmt.Sprintf("Account expires: %s", response.Account.Expires))
 	logInfo("SD", fmt.Sprintf("Lineups: %d", len(response.Lineups)))
@@ -56,7 +57,7 @@ func sdCountries() (response SD_Countries, err error) {
 		return
 	}
 
-	json.Unmarshal(body, &response)
+	json.Unmarshal(body.([]byte), &response)
 
 	return
 }
@@ -68,8 +69,7 @@ func sdHeadends(lineup string) (response SD_Headends, err error) {
 	if err != nil {
 		return
 	}
-
-	json.Unmarshal(body, &response)
+	json.NewDecoder(body.(io.Reader)).Decode(&response)
 
 	return
 }
@@ -95,7 +95,7 @@ func sdChannelList(lineup string) (response SD_ChannelList, err error) {
 		return
 	}
 
-	json.Unmarshal(body, &response)
+	json.Unmarshal(body.([]byte), &response)
 
 	return
 }
@@ -108,8 +108,7 @@ func sdGetSchedules(data string) (response SD_Schedules, err error) {
 	if err != nil {
 		return
 	}
-
-	json.Unmarshal(body, &response)
+	json.NewDecoder(body.(io.Reader)).Decode(&response)
 
 	return
 }
@@ -122,13 +121,12 @@ func sdGetPrograms(data string) (response SD_Programs, err error) {
 		return
 	}
 
-	body, err = gUnzipData(body)
+	newBody, err := gUnzipData(body.(io.Reader))
 
 	if err != nil {
 		return
 	}
-
-	json.Unmarshal(body, &response)
+	json.NewDecoder(newBody).Decode(&response)
 
 	return
 }
@@ -140,13 +138,12 @@ func sdGetMetadata(data string) (response SD_Metadata, err error) {
 	if err != nil {
 		return
 	}
-
-	json.Unmarshal(body, &response)
+	json.NewDecoder(body.(io.Reader)).Decode(&response)
 
 	return
 }
 
-func postDataFromSD(data, reqType string) (body []byte, err error) {
+func postDataFromSD(data, reqType string) (body interface{}, err error) {
 
 	var url, connectType string
 
@@ -226,7 +223,18 @@ func postDataFromSD(data, reqType string) (body []byte, err error) {
 
 	}
 
-	defer resp.Body.Close()
+	switch reqType {
+
+	case "programs":
+		body = resp.Body
+		return
+	case "metadata":
+		body = resp.Body
+		return
+	case "schedules":
+		body = resp.Body
+		return
+	}
 
 	body, _ = ioutil.ReadAll(resp.Body)
 
@@ -234,17 +242,11 @@ func postDataFromSD(data, reqType string) (body []byte, err error) {
 
 	case "headends":
 		return
-	case "schedules":
-		return
-	case "programs":
-		return
-	case "metadata":
-		return
 
 	}
 
 	var response SD_Status
-	err = json.Unmarshal(body, &response)
+	err = json.Unmarshal(body.([]byte), &response)
 
 	if err != nil {
 		return
