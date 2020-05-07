@@ -1,55 +1,152 @@
-# Build binary
-To create the binary, [Go](https://golang.org/ "Golang") must be installed
+
+# Guide2Go BETA
+Guide2Go is written in Go and creates an XMLTV file from the Schedules Direct JSON API.  
+**Configuration files from version 1.0.6 or earlier are not compatible!**
+
+#### Features
+- Cache function to download only new EPG data
+- No database is required
+- Update EPG with CLI command for using your own scripts
+
+#### Requirement
+- [Schedules Direct](https://www.schedulesdirect.org/ "Schedules Direct") Account
+- [Go](https://golang.org/ "Golang") to build the binary
+- Computer with 1-2 GB memory
+
+## Build binary 
+The following command must be executed with the terminal / command prompt inside the source code folder.  
+Linux, Unix, OSX:
 ```
-go build guide2go.go
+go build -o guide2go
 ```
-
-# Short instructions
-
-CLI parameter:
-guide2go -h
-
-1. Create a config file
-
-```guide2go -configure filename```
-
-Follow the instructions in the terminal
-
-## Structure of the configuration file:
-
-### Path to cache file (can be changed). In this file, the data is stored by SD, so that the data does not have to be downloaded again next time.
-
-```
-"file.cache": "./cache_filename.json" 
-```
-
-### Path of the xml file (can be changed)
-```
-"file.output": "filename.xml"
-```
-
-### Change the image format (can be changed). Only the pictures in the highest resolution available are used. Posters are only created if they are also available in the specified format
+Windows:
 
 ```
-"poster.aspect": "all"
+go build -o guide2go.exe
+```
+Switch -o creates the binary *guide2go* in the current folder.  
+
+## Instructions
+
+### Show CLI parameter:  
+```guide2go -h```
+
+```
+-config string
+    = Get data from Schedules Direct with configuration file. [filename.yaml]
+-configure string
+    = Create or modify the configuration file. [filename.yaml]
+-h  : Show help
 ```
 
-- all:  All available image formats are written to the XML file. This feature may be supported by Emby soon.
-- 2x3:  Poster is written in 2x3 format in the XML file (Plex image format), 
-- 4x3:  Poster is written in 4x3 format in the XML file
-- 16x9: Poster is written in 16x9 format in the XML file
+### Create a config file:
 
-### Number of days for the program data (can be changed). Maximum 14 days
+```guide2go -configure MY_CONFIG_FILE.yaml```  
+If the configuration file does not exist, a YAML configuration file is created. 
+
+**Configuration file from version 1.0.6 or earlier is not compatible.**  
+##### Terminal Output:
+```
+2020/05/07 12:00:00 [G2G  ] Version: 1.1.0
+2020/05/07 12:00:00 [URL  ] https://json.schedulesdirect.org/20141201/token
+2020/05/07 12:00:01 [SD   ] Login...OK
+
+2020/05/07 12:00:01 [URL  ] https://json.schedulesdirect.org/20141201/status
+2020/05/07 12:00:01 [SD   ] Account Expires: 2020-11-2 14:08:12 +0000 UTC
+2020/05/07 12:00:01 [SD   ] Lineups: 4 / 4
+2020/05/07 12:00:01 [SD   ] System Status: Online [No known issues.]
+2020/05/07 12:00:01 [G2G  ] Channels: 214
+
+Configuration [MY_CONFIG_FILE.yaml]
+-----------------------------
+ 1. Schedules Direct Account
+ 2. Add Lineup
+ 3. Remove Lineup
+ 4. Manage Channels
+ 5. Create XMLTV File [MY_CONFIG_FILE.xml]
+ 0. Exit
 
 ```
-"schedule.days": 7
+
+**Follow the instructions in the terminal**
+
+1. Schedules Direct Account:  
+Manage Schedules Direct credentials.  
+
+2. Add Lineup:  
+Add Lineup into the Schedules Direct account.  
+
+3. Remove Lineup:  
+Remove Lineup from the Schedules Direct account.  
+
+4. Manage Channels:  
+Selection of the channels to be used.
+All selected channels are merged into one XML file when the XMLTV file is created.
+When using all channels from all lineups it is recommended to create a separate Guide2Go configuration file for each lineup.  
+**Example:**  
+Lineup 1:
+```
+guide2go -configure Config_Lineup_1.yaml
+```
+Lineup 2:
+```
+guide2go -configure Config_Lineup_2.yaml
 ```
 
-## Do not change access data in the configuration file
-### Changes to the lineup and access data via:
+5. Create XMLTV File [MY_CONFIG_FILE.xml]:  
+Creates the XMLTV file with the selected channels.  
 
-```guide2go -configure filename```
+#### The YAML configuration file can be customize with an editor.:
 
-2. Create the XML file:
+```
+Account:
+    Username: SCHEDULES_DIRECT_USERNAME
+    Password: SCHEDULES_DIRECT_HASHED_PASSWORD
+Files:
+    Cache: MY_CONFIG_FILE.json
+    XMLTV: MY_CONFIG_FILE.xml
+Options:
+    Poster Aspect: all
+    Schedule Days: 7
+    Subtitle into Description: false
+Station:
+  - Name: Fox Sports 1 HD
+    ID: "82547"
+    Lineup: USA-DITV-DEFAULT
+  - Name: Fox Sports 2 HD
+    ID: "59305"
+    Lineup: USA-DITV-DEFAULT
+```
 
-```guide2go -config filename```
+**- Account: (Don't change)**  
+Schedules Direct Account data, do not change them in the configuration file.  
+
+**- Flies: (Can be customized)**  
+```
+Cache: /Path/to/cach/file  
+XMLTV: /Path/to/XMLTV/file  
+```
+
+**- Options: (Can be customized)**  
+```
+Poster Aspect: all
+```
+- all:  All available Image ratios are used.  
+- 2x3:  Only uses the Image / Poster in 2x3 ratio. (Used by Plex)  
+- 4x3:  Only uses the Image / Poster in 4x3 ratio.  
+- 16x9: Only uses the Image / Poster in 16x9 ratio.  
+
+**Some clients only use one image, even if there are several in the XMLTV file.**  
+
+```
+Schedule Days: 7
+```
+EPG data for the specified days. Schedules Direct has EPG data for the next 12-14 days  
+
+
+### Create the XMLTV file using the command line (CLI): 
+
+```
+guide2go -config MY_CONFIG_FILE.yaml
+```
+**The configuration file must have already been created.**
