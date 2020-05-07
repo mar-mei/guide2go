@@ -42,7 +42,11 @@ func main() {
 
   if len(*config) != 0 {
     var sd SD
-    sd.Update(*config)
+    err := sd.Update(*config)
+    if err != nil {
+      ShowErr(err)
+    }
+    os.Exit(0)
   }
 
 }

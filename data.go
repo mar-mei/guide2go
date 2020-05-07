@@ -3,6 +3,7 @@ package main
 import (
   "encoding/json"
   "fmt"
+  "io/ioutil"
   "path/filepath"
   "runtime"
   "strings"
@@ -11,11 +12,17 @@ import (
 )
 
 // Update : Update data from Schedules Direct and create the XMLTV file
-func (sd *SD) Update(filename string) {
+func (sd *SD) Update(filename string) (err error) {
 
   Config.File = strings.TrimSuffix(filename, filepath.Ext(filename))
 
-  err := Config.Open()
+  _, err = ioutil.ReadFile(fmt.Sprintf("%s.yaml", Config.File))
+
+  if err != nil {
+    return
+  }
+
+  err = Config.Open()
   if err != nil {
     return
   }
@@ -48,6 +55,7 @@ func (sd *SD) Update(filename string) {
 
   runtime.GC()
 
+  return
 }
 
 // GetData : Get data from Schedules Direct
