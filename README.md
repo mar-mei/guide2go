@@ -148,7 +148,7 @@ Subtitle into Description: false
 ```
 Some clients only display the description and ignore the subtitle tag from the XMLTV file.  
 
-true: If there is a subtitle, it will be added to the description.  
+**true:** If there is a subtitle, it will be added to the description.  
 
 ```XML
 <?xml version="1.0" encoding="UTF-8"?>
