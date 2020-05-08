@@ -314,7 +314,12 @@ func (c *cache) GetDescs(id, subTitle string) (de []Desc) {
       switch Config.Options.SubtitleIntoDescription {
 
       case true:
-        desc.Value = fmt.Sprintf("%s\n%s", subTitle, tmp.Description)
+        if len(subTitle) != 0 {
+          desc.Value = fmt.Sprintf("[%s]\n%s", subTitle, tmp.Description)
+          break
+        }
+
+        fallthrough
       case false:
         desc.Value = tmp.Description
 

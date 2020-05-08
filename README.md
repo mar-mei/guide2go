@@ -143,6 +143,27 @@ Schedule Days: 7
 ```
 EPG data for the specified days. Schedules Direct has EPG data for the next 12-14 days  
 
+```
+Subtitle into Description: false
+```
+Some clients only display the description and ignore the subtitle tag from the XMLTV file.  
+
+true: If there is a subtitle, it will be added to the description.  
+
+```XML
+<?xml version="1.0" encoding="UTF-8"?>
+<programme channel="guide2go.67203.schedulesdirect.org" start="20200509134500 +0000" stop="20200509141000 +0000">
+   <title lang="de">Two and a Half Men</title>
+   <sub-title lang="de">Ich arbeite für Caligula</sub-title>
+   <desc lang="de">[Ich arbeite für Caligula]
+Alan zieht aus, da seine Freundin Kandi und er in Las Vegas eine Million Dollar gewonnen haben. Charlie kehrt zu seinem ausschweifenden Lebensstil zurück und schmeißt wilde Partys, die bald ausarten. Doch dann steht Alan plötzlich wieder vor der Tür.</desc>
+   <category lang="en">Sitcom</category>
+   <episode-num system="xmltv_ns">3.0.</episode-num>
+   <episode-num system="onscreen">S4 E1</episode-num>
+   <episode-num system="original-air-date">2006-09-18</episode-num>
+   ...
+</programme>
+```
 
 ### Create the XMLTV file using the command line (CLI): 
 
