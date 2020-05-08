@@ -3,6 +3,11 @@
 Guide2Go is written in Go and creates an XMLTV file from the Schedules Direct JSON API.  
 **Configuration files from version 1.0.6 or earlier are not compatible!**
 
+### Advantages compared to version 1.0.x
+- 3x faster
+- Less memory
+- Smaller cache file
+
 #### Features
 - Cache function to download only new EPG data
 - No database is required
