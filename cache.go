@@ -107,14 +107,12 @@ func (c *cache) AddSchedule(data *[]byte) {
 
 func (c *cache) AddProgram(gzip *[]byte, metadataIDs *[]string, wg *sync.WaitGroup) {
 
-  //go func() {
   c.Lock()
 
   defer func() {
     c.Unlock()
     wg.Done()
   }()
-  //defer c.Unlock()
 
   b, err := gUnzip(*gzip)
   if err != nil {
@@ -153,8 +151,6 @@ func (c *cache) AddProgram(gzip *[]byte, metadataIDs *[]string, wg *sync.WaitGro
     }
 
   }
-
-  //}()
 
   return
 }
@@ -324,8 +320,23 @@ func (c *cache) GetTitle(id, lang string) (t []Title) {
 func (c *cache) GetSubTitle(id, lang string) (s SubTitle) {
 
   if p, ok := c.Program[id]; ok {
-    s.Value = p.EpisodeTitle150
-    s.Lang = lang
+
+    if len(p.EpisodeTitle150) != 0 {
+
+      s.Value = p.EpisodeTitle150
+      s.Lang = lang
+
+    } else {
+
+      for _, d := range p.Descriptions.Description100 {
+
+        s.Value = d.Description
+        s.Lang = d.DescriptionLanguage
+
+      }
+
+    }
+
   }
 
   return

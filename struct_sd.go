@@ -144,6 +144,7 @@ type SD struct {
   Program   func() (err error)
 }
 
+// Station : Station SD API
 type Station struct {
   StationID           string   `json:"stationID"`
   Name                string   `json:"name"`
@@ -170,4 +171,126 @@ type Station struct {
     Postalcode string `json:"postalcode"`
     Country    string `json:"country"`
   } `json:"broadcaster,omitempty"`
+}
+
+// SDProgram : Schedules Direct program data
+type SDProgram struct {
+
+  // Program
+  Cast []struct {
+    BillingOrder  string `json:"billingOrder"`
+    CharacterName string `json:"characterName"`
+    Name          string `json:"name"`
+    NameID        string `json:"nameId"`
+    PersonID      string `json:"personId"`
+    Role          string `json:"role"`
+  } `json:"cast"`
+  ContentAdvisory []string `json:"contentAdvisory"`
+  ContentRating   []struct {
+    Body    string `json:"body"`
+    Code    string `json:"code"`
+    Country string `json:"country"`
+  } `json:"contentRating"`
+  Crew []struct {
+    BillingOrder string `json:"billingOrder"`
+    Name         string `json:"name"`
+    NameID       string `json:"nameId"`
+    PersonID     string `json:"personId"`
+    Role         string `json:"role"`
+  } `json:"crew"`
+  Descriptions struct {
+    Description1000 []struct {
+      Description         string `json:"description"`
+      DescriptionLanguage string `json:"descriptionLanguage"`
+    } `json:"description1000"`
+    Description100 []struct {
+      DescriptionLanguage string `json:"descriptionLanguage"`
+      Description         string `json:"description"`
+    } `json:"description100"`
+  } `json:"descriptions"`
+  EntityType        string   `json:"entityType"`
+  EpisodeTitle150   string   `json:"episodeTitle150"`
+  Genres            []string `json:"genres"`
+  HasEpisodeArtwork bool     `json:"hasEpisodeArtwork"`
+  HasImageArtwork   bool     `json:"hasImageArtwork"`
+  HasSeriesArtwork  bool     `json:"hasSeriesArtwork"`
+  Md5               string   `json:"md5"`
+
+  Metadata []struct {
+    Gracenote struct {
+      Episode int `json:"episode"`
+      Season  int `json:"season"`
+    } `json:"Gracenote"`
+  } `json:"metadata"`
+
+  OriginalAirDate string `json:"originalAirDate"`
+  ProgramID       string `json:"programID"`
+  ResourceID      string `json:"resourceID"`
+  ShowType        string `json:"showType"`
+  Titles          []struct {
+    Title120 string `json:"title120"`
+  } `json:"titles"`
+}
+
+//SDMetadata : Schedules Direct meta data
+type SDMetadata struct {
+  Data []struct {
+    Aspect string `json:"aspect"`
+    Height string `json:"height"`
+    Size   string `json:"size"`
+    URI    string `json:"uri"`
+    Width  string `json:"width"`
+
+    /*
+       Category string `json:"category"`
+       Primary  string `json:"primary"`
+       Text     string `json:"text"`
+
+       Caption struct {
+         Content string `json:"content"`
+         Lang    string `json:"lang"`
+       } `json:"caption"`
+    */
+  } `json:"data"`
+  ProgramID string `json:"programID"`
+}
+
+// SDStation : Schedules Direct stations
+type SDStation struct {
+  Map []struct {
+    Channel   string `json:"channel"`
+    StationID string `json:"stationID"`
+  } `json:"map"`
+  Metadata struct {
+    Lineup    string `json:"lineup"`
+    Modified  string `json:"modified"`
+    Transport string `json:"transport"`
+  } `json:"metadata"`
+  Stations []struct {
+    Affiliate         string   `json:"affiliate"`
+    BroadcastLanguage []string `json:"broadcastLanguage"`
+    Broadcaster       struct {
+      City       string `json:"city"`
+      Country    string `json:"country"`
+      Postalcode string `json:"postalcode"`
+      State      string `json:"state"`
+    } `json:"broadcaster"`
+    Callsign            string   `json:"callsign"`
+    DescriptionLanguage []string `json:"descriptionLanguage"`
+    Logo                struct {
+      URL    string `json:"URL"`
+      Height int    `json:"height"`
+      Width  int    `json:"width"`
+      Md5    string `json:"md5"`
+    } `json:"logo,omitempty"`
+    Name        string `json:"name"`
+    StationID   string `json:"stationID"`
+    StationLogo []struct {
+      URL    string `json:"URL"`
+      Height int    `json:"height"`
+      Md5    string `json:"md5"`
+      Source string `json:"source"`
+      Width  int    `json:"width"`
+    } `json:"stationLogo"`
+  } `json:"stations"`
 }
