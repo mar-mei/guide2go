@@ -85,6 +85,7 @@ type G2GCache struct {
   Data []struct {
     Aspect string `json:"aspect"`
     Height string `json:"height"`
+    Size   string `json:"size"`
     URI    string `json:"uri"`
     Width  string `json:"width"`
   } `json:"data,omitempty"`
@@ -171,19 +172,19 @@ type SDMetadata struct {
   Data []struct {
     Aspect string `json:"aspect"`
     Height string `json:"height"`
+    Size   string `json:"size"`
     URI    string `json:"uri"`
     Width  string `json:"width"`
 
     /*
-          Caption struct {
-            Content string `json:"content"`
-            Lang    string `json:"lang"`
-          } `json:"caption"`
        Category string `json:"category"`
        Primary  string `json:"primary"`
-       Size     string `json:"size"`
        Text     string `json:"text"`
-       Tier     string `json:"tier"`
+
+       Caption struct {
+         Content string `json:"content"`
+         Lang    string `json:"lang"`
+       } `json:"caption"`
     */
   } `json:"data"`
   ProgramID string `json:"programID"`

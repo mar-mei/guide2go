@@ -45,7 +45,7 @@ func (sd *SD) Update(filename string) (err error) {
 
   runtime.GC()
 
-  err = CreateXMLTV2(filename)
+  err = CreateXMLTV(filename)
   if err != nil {
     ShowErr(err)
     return
@@ -84,30 +84,12 @@ func (sd *SD) GetData() {
 
   for _, id := range lineup {
 
-    //var channelIDs = Config.GetChannelList(id)
-
     sd.Req.Parameter = fmt.Sprintf("/%s", id)
     sd.Req.Type = "GET"
 
     err = sd.Lineups()
 
     Cache.AddStations(&sd.Resp.Body, id)
-
-    /*
-       for _, station := range sd.Resp.Lineup.Stations {
-
-         if ContainsString(channelIDs, station.StationID) != -1 {
-
-           fmt.Println(station.StationID, station.Name)
-           //if station.Name == "Das Erste HD" {
-           //fmt.Println(mapToJson(station))
-           //}
-           Cache.AddChannel(station)
-
-         }
-
-       }
-    */
 
   }
 
@@ -163,6 +145,7 @@ func (sd *SD) GetData() {
   sd.Req.Data = []byte{}
 
   var types = []string{"programs", "metadata"}
+  var metadataIDs []string
   var programIds = Cache.GetRequiredProgrammIDs()
   var allIDs = Cache.GetAllProgrammIDs()
   var programs = make([]interface{}, 0)
@@ -175,6 +158,7 @@ func (sd *SD) GetData() {
     case "metadata":
       sd.Req.URL = fmt.Sprintf("%smetadata/programs", sd.BaseURL)
       sd.Req.Call = "metadata"
+      programIds = metadataIDs
       limit = 500
 
     case "programs":
@@ -189,18 +173,7 @@ func (sd *SD) GetData() {
 
       count++
 
-      var programID string
-
-      switch t {
-      case "metadata":
-        programID = p[0:10]
-
-      case "programs":
-        programID = p
-
-      }
-
-      programs = append(programs, programID)
+      programs = append(programs, p)
 
       if count == limit || i == len(programIds)-1 {
 
@@ -210,36 +183,31 @@ func (sd *SD) GetData() {
           return
         }
 
-        sd.Program()
+        err := sd.Program()
+        if err != nil {
+          ShowErr(err)
+        }
 
-        var gzip = sd.Resp.Body
+        wg.Add(1)
 
         switch t {
         case "metadata":
-          wg.Add(1)
-          go func() {
-            Cache.AddMetadata(&gzip)
-            wg.Done()
-          }()
+          go Cache.AddMetadata(&sd.Resp.Body, &wg)
 
         case "programs":
-          wg.Add(1)
-          go func() {
-            Cache.AddProgram(&gzip)
-            wg.Done()
-          }()
+          go Cache.AddProgram(&sd.Resp.Body, &metadataIDs, &wg)
+
         }
 
         count = 0
         programs = make([]interface{}, 0)
+        wg.Wait()
 
       }
 
     }
 
   }
-
-  wg.Wait()
 
   err = Cache.Save()
   if err != nil {

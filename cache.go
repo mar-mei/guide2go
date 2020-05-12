@@ -5,6 +5,7 @@ import (
   "fmt"
   "io/ioutil"
   "strconv"
+  "sync"
 )
 
 // Cache : Cache file
@@ -104,10 +105,16 @@ func (c *cache) AddSchedule(data *[]byte) {
 
 }
 
-func (c *cache) AddProgram(gzip *[]byte) {
+func (c *cache) AddProgram(gzip *[]byte, metadataIDs *[]string, wg *sync.WaitGroup) {
 
+  //go func() {
   c.Lock()
-  defer c.Unlock()
+
+  defer func() {
+    c.Unlock()
+    wg.Done()
+  }()
+  //defer c.Unlock()
 
   b, err := gUnzip(*gzip)
   if err != nil {
@@ -141,15 +148,24 @@ func (c *cache) AddProgram(gzip *[]byte) {
 
     c.Program[sd.ProgramID] = g2gCache
 
+    if sd.HasEpisodeArtwork == true || sd.HasImageArtwork == true {
+      *metadataIDs = append(*metadataIDs, sd.ProgramID[0:10])
+    }
+
   }
+
+  //}()
 
   return
 }
 
-func (c *cache) AddMetadata(gzip *[]byte) {
+func (c *cache) AddMetadata(gzip *[]byte, wg *sync.WaitGroup) {
 
   c.Lock()
-  defer c.Unlock()
+  defer func() {
+    c.Unlock()
+    wg.Done()
+  }()
 
   b, err := gUnzip(*gzip)
   if err != nil {
@@ -162,12 +178,15 @@ func (c *cache) AddMetadata(gzip *[]byte) {
 
   err = json.Unmarshal(b, &sdData)
   if err != nil {
+    ShowErr(err)
     return
   }
 
   for _, sd := range sdData {
+
     g2gCache.Data = sd.Data
     c.Metadata[sd.ProgramID] = g2gCache
+
   }
 
   return
@@ -178,7 +197,11 @@ func (c *cache) GetAllProgrammIDs() (programIDs []string) {
   for _, channel := range c.Schedule {
 
     for _, schedule := range channel {
-      programIDs = append(programIDs, schedule.ProgramID)
+
+      if ContainsString(programIDs, schedule.ProgramID) == -1 {
+        programIDs = append(programIDs, schedule.ProgramID)
+      }
+
     }
 
   }
@@ -193,7 +216,11 @@ func (c *cache) GetRequiredProgrammIDs() (programIDs []string) {
   for _, id := range allProgramIDs {
 
     if _, ok := c.Program[id]; !ok {
-      programIDs = append(programIDs, id)
+
+      if ContainsString(programIDs, id) == -1 {
+        programIDs = append(programIDs, id)
+      }
+
     }
 
   }
@@ -221,6 +248,9 @@ func (c *cache) Open() (err error) {
 }
 
 func (c *cache) Save() (err error) {
+
+  c.Lock()
+  defer c.Unlock()
 
   data, err := json.MarshalIndent(&c, "", "  ")
   if err != nil {

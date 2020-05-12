@@ -11,7 +11,8 @@ import (
   "time"
 )
 
-func CreateXMLTV2(filename string) (err error) {
+// CreateXMLTV : Create XMLTV file from cache file
+func CreateXMLTV(filename string) (err error) {
 
   defer func() {
     runtime.GC()
@@ -98,63 +99,6 @@ func CreateXMLTV2(filename string) (err error) {
 
   return
 }
-
-// CreateXMLTV : Create XMLTV file from cache file
-/*
-func CreateXMLTV(filename string) (err error) {
-
-  defer runtime.GC()
-
-  Config.File = strings.TrimSuffix(filename, filepath.Ext(filename))
-
-  err = Config.Open()
-  if err != nil {
-    return
-  }
-
-  err = Cache.Open()
-  if err != nil {
-    return
-  }
-
-  Cache.Init()
-  err = Cache.Open()
-  if err != nil {
-    ShowErr(err)
-    return
-  }
-
-  showInfo("G2G", fmt.Sprintf("Create XMLTV File [%s]", Config.Files.XMLTV))
-
-  var xmltv = &XMLTV{Generator: AppName, Source: "Schedules Direct", Info: "http://schedulesdirect.org"}
-
-  for _, ch := range Cache.Channel {
-
-    var channel ChannelXML
-
-    channel.ID = fmt.Sprintf("%s.%s.schedulesdirect.org", AppName, ch.StationID)
-    channel.Icon = ch.getLogo()
-    channel.DisplayName = append(channel.DisplayName, DisplayName{Value: ch.Callsign})
-    channel.DisplayName = append(channel.DisplayName, DisplayName{Value: ch.Name})
-
-    xmltv.Channel = append(xmltv.Channel, channel)
-
-    xmltv.Program = append(xmltv.Program, getProgram(ch)...)
-
-  }
-
-  var content, _ = xml.MarshalIndent(xmltv, "  ", "    ")
-  var xmlOutput = []byte(xml.Header + string(content))
-  _ = xmlOutput
-  //fmt.Println(string(xmlOutput))
-  writeByteToFile(Config.Files.XMLTV, xmlOutput)
-  //time.Sleep(20 * time.Second)
-
-  xmltv = &XMLTV{}
-
-  return
-}
-*/
 
 // Channel infos
 func (channel *G2GCache) getLogo() (icon Icon) {
