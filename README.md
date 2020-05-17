@@ -1,5 +1,5 @@
 
-# Guide2Go BETA
+# Guide2Go
 Guide2Go is written in Go and creates an XMLTV file from the Schedules Direct JSON API.  
 **Configuration files from version 1.0.6 or earlier are not compatible!**
 
