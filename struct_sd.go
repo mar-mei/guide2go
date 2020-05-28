@@ -234,25 +234,16 @@ type SDProgram struct {
 
 //SDMetadata : Schedules Direct meta data
 type SDMetadata struct {
-  Data []struct {
-    Aspect string `json:"aspect"`
-    Height string `json:"height"`
-    Size   string `json:"size"`
-    URI    string `json:"uri"`
-    Width  string `json:"width"`
-
-    /*
-       Category string `json:"category"`
-       Primary  string `json:"primary"`
-       Text     string `json:"text"`
-
-       Caption struct {
-         Content string `json:"content"`
-         Lang    string `json:"lang"`
-       } `json:"caption"`
-    */
-  } `json:"data"`
+  Data      []Data `json:"data",required`
   ProgramID string `json:"programID"`
+}
+
+type Data struct {
+  Aspect string `json:"aspect"`
+  Height string `json:"height"`
+  Size   string `json:"size"`
+  URI    string `json:"uri"`
+  Width  string `json:"width"`
 }
 
 // SDStation : Schedules Direct stations
@@ -293,4 +284,16 @@ type SDStation struct {
       Width  int    `json:"width"`
     } `json:"stationLogo"`
   } `json:"stations"`
+}
+
+// SDError : Errors from SD
+type SDError struct {
+  Data struct {
+    Code     int64  `json:"code"`
+    Datetime string `json:"datetime"`
+    Message  string `json:"message"`
+    Response string `json:"response"`
+    ServerID string `json:"serverID"`
+  } `json:"data"`
+  ProgramID string `json:"programID"`
 }

@@ -105,7 +105,7 @@ func (c *cache) AddSchedule(data *[]byte) {
 
 }
 
-func (c *cache) AddProgram(gzip *[]byte, metadataIDs *[]string, wg *sync.WaitGroup) {
+func (c *cache) AddProgram(gzip *[]byte, wg *sync.WaitGroup) {
 
   c.Lock()
 
@@ -146,10 +146,6 @@ func (c *cache) AddProgram(gzip *[]byte, metadataIDs *[]string, wg *sync.WaitGro
 
     c.Program[sd.ProgramID] = g2gCache
 
-    if sd.HasEpisodeArtwork == true || sd.HasImageArtwork == true {
-      *metadataIDs = append(*metadataIDs, sd.ProgramID[0:10])
-    }
-
   }
 
   return
@@ -169,26 +165,44 @@ func (c *cache) AddMetadata(gzip *[]byte, wg *sync.WaitGroup) {
     return
   }
 
-  var g2gCache G2GCache
-  var sdData []SDMetadata
+  var tmp = make([]interface{}, 0)
 
-  err = json.Unmarshal(b, &sdData)
+  var g2gCache G2GCache
+
+  err = json.Unmarshal(b, &tmp)
   if err != nil {
     ShowErr(err)
     return
   }
 
-  for _, sd := range sdData {
+  for _, t := range tmp {
 
-    g2gCache.Data = sd.Data
-    c.Metadata[sd.ProgramID] = g2gCache
+    var sdData SDMetadata
+
+    jsonByte, _ := json.Marshal(t)
+    err = json.Unmarshal(jsonByte, &sdData)
+    if err != nil {
+
+      var sdError SDError
+      err = json.Unmarshal(jsonByte, &sdError)
+      if err == nil {
+        err = fmt.Errorf("%s [SD API Error Code: %d] Program ID: %s", sdError.Data.Message, sdError.Data.Code, sdError.ProgramID)
+        ShowErr(err)
+      }
+
+    } else {
+
+      g2gCache.Data = sdData.Data
+      c.Metadata[sdData.ProgramID] = g2gCache
+
+    }
 
   }
 
   return
 }
 
-func (c *cache) GetAllProgrammIDs() (programIDs []string) {
+func (c *cache) GetAllProgramIDs() (programIDs []string) {
 
   for _, channel := range c.Schedule {
 
@@ -205,9 +219,9 @@ func (c *cache) GetAllProgrammIDs() (programIDs []string) {
   return
 }
 
-func (c *cache) GetRequiredProgrammIDs() (programIDs []string) {
+func (c *cache) GetRequiredProgramIDs() (programIDs []string) {
 
-  var allProgramIDs = c.GetAllProgrammIDs()
+  var allProgramIDs = c.GetAllProgramIDs()
 
   for _, id := range allProgramIDs {
 
@@ -215,6 +229,27 @@ func (c *cache) GetRequiredProgrammIDs() (programIDs []string) {
 
       if ContainsString(programIDs, id) == -1 {
         programIDs = append(programIDs, id)
+      }
+
+    }
+
+  }
+
+  return
+}
+
+func (c *cache) GetRequiredMetaIDs() (metaIDs []string) {
+
+  for id, p := range c.Program {
+
+    if p.HasImageArtwork == true {
+
+      if len(id) > 10 {
+
+        if _, ok := c.Metadata[id[:10]]; !ok {
+          metaIDs = append(metaIDs, id[:10])
+        }
+
       }
 
     }
@@ -266,7 +301,7 @@ func (c *cache) CleanUp() {
   var count int
   showInfo("G2G", fmt.Sprintf("Clean up Cache [%s]", Config.Files.Cache))
 
-  var programIDs = c.GetAllProgrammIDs()
+  var programIDs = c.GetAllProgramIDs()
 
   for id := range c.Program {
 
@@ -532,15 +567,6 @@ func (c *cache) GetIcon(id string) (i []Icon) {
     }
 
   }
-
-  /*
-     if len(i) > 0 {
-
-       fmt.Println(i)
-
-       os.Exit(0)
-     }
-  */
 
   return
 }

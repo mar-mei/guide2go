@@ -145,9 +145,8 @@ func (sd *SD) GetData() {
   sd.Req.Data = []byte{}
 
   var types = []string{"programs", "metadata"}
-  var metadataIDs []string
-  var programIds = Cache.GetRequiredProgrammIDs()
-  var allIDs = Cache.GetAllProgrammIDs()
+  var programIds = Cache.GetRequiredProgramIDs()
+  var allIDs = Cache.GetAllProgramIDs()
   var programs = make([]interface{}, 0)
 
   showInfo("G2G", fmt.Sprintf("Download Program Informations: New: %d / Cached: %d", len(programIds), len(allIDs)-len(programIds)))
@@ -158,8 +157,9 @@ func (sd *SD) GetData() {
     case "metadata":
       sd.Req.URL = fmt.Sprintf("%smetadata/programs", sd.BaseURL)
       sd.Req.Call = "metadata"
-      programIds = metadataIDs
+      programIds = Cache.GetRequiredMetaIDs()
       limit = 500
+      showInfo("G2G", fmt.Sprintf("Download missing Metadata: %d ", len(programIds)))
 
     case "programs":
 
@@ -195,7 +195,7 @@ func (sd *SD) GetData() {
           go Cache.AddMetadata(&sd.Resp.Body, &wg)
 
         case "programs":
-          go Cache.AddProgram(&sd.Resp.Body, &metadataIDs, &wg)
+          go Cache.AddProgram(&sd.Resp.Body, &wg)
 
         }
 

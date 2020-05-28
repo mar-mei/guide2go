@@ -11,7 +11,7 @@ import (
 const AppName = "guide2go"
 
 // Version : Version
-const Version = "1.1.0"
+const Version = "1.1.1"
 
 // Config : Config file (struct)
 var Config config

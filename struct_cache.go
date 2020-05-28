@@ -86,13 +86,7 @@ type G2GCache struct {
   } `json:"titles"`
 
   // Metadata
-  Data []struct {
-    Aspect string `json:"aspect"`
-    Height string `json:"height"`
-    Size   string `json:"size"`
-    URI    string `json:"uri"`
-    Width  string `json:"width"`
-  } `json:"data,omitempty"`
+  Data []Data `json:"data,omitempty"`
 }
 
 // SDSchedule : Schedules Direct schedule data
