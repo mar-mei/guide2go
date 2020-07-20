@@ -1,10 +1,13 @@
 package main
 
+import "encoding/xml"
+
 // Programme : Programme
 type Programme struct {
-  Channel string `xml:"channel,attr"`
-  Start   string `xml:"start,attr"`
-  Stop    string `xml:"stop,attr"`
+  XMLName xml.Name `xml:"programme"`
+  Channel string   `xml:"channel,attr"`
+  Start   string   `xml:"start,attr"`
+  Stop    string   `xml:"stop,attr"`
 
   Title    []Title  `xml:"title"`
   SubTitle SubTitle `xml:"sub-title"`
@@ -14,9 +17,9 @@ type Programme struct {
   // Credits
   Credits Credits `xml:"credits,omitempty"`
 
-  Categorys   []Category   `xml:"category"`
+  Categorys   []Category   `xml:"category,omitempty"`
   Language    string       `xml:"language,omitempty"`
-  EpisodeNums []EpisodeNum `xml:"episode-num"`
+  EpisodeNums []EpisodeNum `xml:"episode-num,omitempty"`
 
   //Icon
   Icon  []Icon `xml:"icon"`
@@ -25,9 +28,9 @@ type Programme struct {
 
   Rating []Rating `xml:"rating,omitempty"`
 
-  PreviouslyShown *PreviouslyShown `xml:"previously-shown"`
-  New             *New             `xml:"new,omitempty"`
-  Live            *Live            `xml:"live"`
+  PreviouslyShown PreviouslyShown `xml:"previously-shown,omitempty"`
+  New             *New            `xml:"new"`
+  Live            *Live           `xml:"live"`
 }
 
 // ChannelXML : Channel
@@ -127,13 +130,11 @@ type Video struct {
 }
 
 type Audio struct {
-  Stereo   string `xml:"stereo,omitempty"`
-  Surround string `xml:"surround,omitempty"`
-  Mono     string `xml:"mono,omitempty"`
+  Stereo string `xml:"stereo,omitempty"`
 }
 
 type PreviouslyShown struct {
-  Start string `xml:"start,attr"`
+  Start string `xml:"start,attr,omitempty"`
 }
 
 type New struct {

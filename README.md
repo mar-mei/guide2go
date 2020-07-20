@@ -52,7 +52,7 @@ If the configuration file does not exist, a YAML configuration file is created.
 **Configuration file from version 1.0.6 or earlier is not compatible.**  
 ##### Terminal Output:
 ```
-2020/05/07 12:00:00 [G2G  ] Version: 1.1.0
+2020/05/07 12:00:00 [G2G  ] Version: 1.1.2
 2020/05/07 12:00:00 [URL  ] https://json.schedulesdirect.org/20141201/token
 2020/05/07 12:00:01 [SD   ] Login...OK
 
@@ -103,7 +103,7 @@ Creates the XMLTV file with the selected channels.
 
 #### The YAML configuration file can be customize with an editor.:
 
-```
+```yaml
 Account:
     Username: SCHEDULES_DIRECT_USERNAME
     Password: SCHEDULES_DIRECT_HASHED_PASSWORD
@@ -114,9 +114,16 @@ Options:
     Poster Aspect: all
     Schedule Days: 7
     Subtitle into Description: false
-    Insert credits tag into XML file: false
-    Insert rating tag into XML file: false
-    Show download errors from Schedules Direct in the Log: false
+    Insert credits tag into XML file: true
+    Rating:
+        Insert rating tag into XML file: true
+        Maximum rating entries. 0 for all entries: 1
+        Preferred countries. ISO 3166-1 alpha-3 country code. Leave empty for all systems:
+          - DEU
+          - CHE
+          - USA
+        Use country code as rating system: false
+    Show download errors from Schedules Direct in the log: false
 Station:
   - Name: Fox Sports 1 HD
     ID: "82547"
@@ -124,19 +131,20 @@ Station:
   - Name: Fox Sports 2 HD
     ID: "59305"
     Lineup: USA-DITV-DEFAULT
+  ...
 ```
 
 **- Account: (Don't change)**  
 Schedules Direct Account data, do not change them in the configuration file.  
 
 **- Flies: (Can be customized)**  
-```
+```yaml
 Cache: /Path/to/cach/file.json  
 XMLTV: /Path/to/XMLTV/file.xml  
 ```
 
 **- Options: (Can be customized)**  
-```
+```yaml
 Poster Aspect: all
 ```
 - all:  All available Image ratios are used.  
@@ -148,14 +156,14 @@ Poster Aspect: all
 
 ---
 
-```
+```yaml
 Schedule Days: 7
 ```
 EPG data for the specified days. Schedules Direct has EPG data for the next 12-14 days  
 
 ---
 
-```
+```yaml
 Subtitle into Description: false
 ```
 Some clients only display the description and ignore the subtitle tag from the XMLTV file.  
@@ -179,7 +187,7 @@ Alan zieht aus, da seine Freundin Kandi und er in Las Vegas eine Million Dollar 
 
 ---
 
-```
+```yaml
 Insert credits tag into XML file: false
 ```
 **true:** Adds the credits (director, actor, producer, writer) to the program information, if available.
@@ -208,15 +216,12 @@ Insert credits tag into XML file: false
 
 ---
 
-```
-Insert rating tag into XML file: false
+```yaml
+Rating:
+        Insert rating tag into XML file: true
+        ...
 ```
 **true:** Adds the TV parental guidelines to the program information.  
-
-Some clients only use the first entry and ignore the language. If a rating entry exists in the same language as the Schedules Direct Lineup, it will be set to the top. In this example German (DEU).  
-
-Lineup: **DEU**-1000097-DEFAULT  
-1st rating system (Germany): Freiwillige Selbstkontrolle der Filmwirtschaft  
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -228,22 +233,90 @@ Lineup: **DEU**-1000097-DEFAULT
   <rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
     <value>12</value>
   </rating>
-  <rating system="USA Parental Rating">
-    <value>TV14</value>
-  </rating>
-  <rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
-    <value>12</value>
-  </rating>
    ...
 </programme>
+```
+**false:** TV parental guidelines are not used. Further rating settings are ignored.  
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<programme channel="guide2go.67203.schedulesdirect.org" start="20200509134500 +0000" stop="20200509141000 +0000">
+  <title lang="de">Two and a Half Men</title>
+  <sub-title lang="de">Ich arbeite für Caligula</sub-title>
+  <language>de</language>
+   ...
+</programme>
+```
+
+```yaml
+Rating:
+        ...
+        Maximum rating entries. 0 for all entries: 1
+        ...
+```
+Specifies the number of maximum rating entries. If the value is 0, all parental guidelines available from Schedules Direct are used. Depending on the preferred countries.
+
+```yaml
+Rating:
+        ...
+        Preferred countries. ISO 3166-1 alpha-3 country code. Leave empty for all systems:
+          - DEU
+          - CHE
+          - USA
+        ...
+```
+Sets the order of the preferred countries [ISO 3166-1 alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3 "ISO 3166-1 alpha-3").  
+Parental guidelines are not available for every country and program information. Trial and error.  
+If no country is specified, all available countries are used. Many clients ignore a list with more than one entry or use the first entry.  
+
+**If no country is specified:**  
+If a rating entry exists in the same language as the Schedules Direct Lineup, it will be set to the top. In this example German (DEU).  
+
+Lineup: **DEU**-1000097-DEFAULT  
+1st rating system (Germany): Freiwillige Selbstkontrolle der Filmwirtschaft  
+```xml
+...
+<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+  <value>12</value>
+</rating>
+<rating system="USA Parental Rating">
+  <value>TV14</value>
+</rating>
+...
+```
+
+```yaml
+Rating:
+        ...
+        Use country code as rating system: false
+```
+
+**true:**
+```xml
+<rating system="DEU">
+  <value>12</value>
+</rating>
+<rating system="USA">
+  <value>TV14</value>
+</rating>
+
+```
+
+**false:**
+```xml
+<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+  <value>12</value>
+</rating>
+<rating system="USA Parental Rating">
+  <value>TV14</value>
+</rating>
 ```
 
 ---
 
 ```
-Show download errors from Schedules Direct in the Log: false
+Show download errors from Schedules Direct in the log: false
 ```
-**true:** Shows errors from Schedules Direct in the log that can occur when downloading the data.  
+**true:** Shows incorrect downloads of Schedules Direct in the log.  
 
 Example:
 ```

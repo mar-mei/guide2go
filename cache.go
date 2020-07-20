@@ -640,20 +640,84 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 
 func (c *cache) GetRating(id, countryCode string) (ra []Rating) {
 
-  if Config.Options.Rating == true {
+  if Config.Options.Rating.Guidelines == false {
+    return
+  }
 
-    if p, ok := c.Program[id]; ok {
+  var add = func(code, body, country string) {
+
+    switch Config.Options.Rating.CountryCodeAsSystem {
+
+    case true:
+      ra = append(ra, Rating{Value: code, System: country})
+
+    case false:
+      ra = append(ra, Rating{Value: code, System: body})
+
+    }
+
+  }
+
+  /*
+     var prepend = func(code, body, country string) {
+
+       switch Config.Options.Rating.CountryCodeAsSystem {
+
+       case true:
+         ra = append([]Rating{{Value: code, System: country}}, ra...)
+
+       case false:
+         ra = append([]Rating{{Value: code, System: body}}, ra...)
+
+       }
+
+     }
+  */
+
+  if p, ok := c.Program[id]; ok {
+
+    switch len(Config.Options.Rating.Countries) {
+
+    case 0:
+      for _, r := range p.ContentRating {
+
+        if len(ra) == Config.Options.Rating.MaxEntries && Config.Options.Rating.MaxEntries != 0 {
+          return
+        }
+
+        if countryCode == r.Country {
+          add(r.Code, r.Body, r.Country)
+        }
+
+      }
 
       for _, r := range p.ContentRating {
 
-        /*
-           If a country code is available that is identical to that of the lineup,
-           this entry is placed at the beginning of the slice. Plex Hack!!!
-        */
-        if countryCode == r.Country {
-          ra = append([]Rating{{Value: r.Code, System: r.Body}}, ra...)
-        } else {
-          ra = append(ra, Rating{Value: r.Code, System: r.Body})
+        if len(ra) == Config.Options.Rating.MaxEntries && Config.Options.Rating.MaxEntries != 0 {
+          return
+        }
+
+        if countryCode != r.Country {
+          add(r.Code, r.Body, r.Country)
+        }
+
+      }
+
+    default:
+      for _, cCode := range Config.Options.Rating.Countries {
+
+        for _, r := range p.ContentRating {
+
+          if len(ra) == Config.Options.Rating.MaxEntries && Config.Options.Rating.MaxEntries != 0 {
+            return
+          }
+
+          if cCode == r.Country {
+
+            add(r.Code, r.Body, r.Country)
+
+          }
+
         }
 
       }

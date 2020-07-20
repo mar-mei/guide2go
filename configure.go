@@ -86,6 +86,7 @@ func Configure(filename string) (err error) {
     switch selection {
 
     case 0:
+      Config.Save()
       os.Exit(0)
 
     case 1:
@@ -148,25 +149,38 @@ func (c *config) Open() (err error) {
 
   // Credits tag
   if !bytes.Contains(data, []byte("credits tag")) {
+
     rmCacheFile = true
     newOptions = true
+
     Config.Options.Credits = true
+
     showInfo("G2G", fmt.Sprintf("%s (credits) [%s]", getMsg(0300), Config.File))
+
   }
 
   // Rating tag
-  if !bytes.Contains(data, []byte("rating tag")) {
-    rmCacheFile = true
+  if !bytes.Contains(data, []byte("Rating:")) {
+
     newOptions = true
-    Config.Options.Rating = true
+
+    Config.Options.Rating.Guidelines = true
+    Config.Options.Rating.Countries = []string{}
+    Config.Options.Rating.CountryCodeAsSystem = false
+    Config.Options.Rating.MaxEntries = 1
+
     showInfo("G2G", fmt.Sprintf("%s (rating) [%s]", getMsg(0300), Config.File))
+
   }
 
   // SD errors
   if !bytes.Contains(data, []byte("download errors")) {
+
     newOptions = true
     Config.Options.SDDownloadErrors = false
+
     showInfo("G2G", fmt.Sprintf("%s (SD errors) [%s]", getMsg(0300), Config.File))
+
   }
 
   if newOptions == true {
@@ -211,7 +225,10 @@ func (c *config) InitConfig() {
   c.Options.Schedule = 7
   c.Options.SubtitleIntoDescription = false
   c.Options.Credits = false
-  c.Options.Rating = false
+  Config.Options.Rating.Guidelines = true
+  Config.Options.Rating.Countries = []string{"DEU", "CHE", "USA"}
+  Config.Options.Rating.CountryCodeAsSystem = false
+  Config.Options.Rating.MaxEntries = 1
 
   return
 }
