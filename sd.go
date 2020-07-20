@@ -6,7 +6,6 @@ import (
   "fmt"
   "io/ioutil"
   "net/http"
-  "os"
 )
 
 // Init : Init Schedules Direct
@@ -35,7 +34,7 @@ func (sd *SD) Init() (err error) {
 
       if sd.Resp.Login.Code != 0 {
         // SD Account problem
-        os.Exit(0)
+        return
       }
 
       return

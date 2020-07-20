@@ -114,6 +114,9 @@ Options:
     Poster Aspect: all
     Schedule Days: 7
     Subtitle into Description: false
+    Insert credits tag into XML file: false
+    Insert rating tag into XML file: false
+    Show download errors from Schedules Direct in the Log: false
 Station:
   - Name: Fox Sports 1 HD
     ID: "82547"
@@ -128,8 +131,8 @@ Schedules Direct Account data, do not change them in the configuration file.
 
 **- Flies: (Can be customized)**  
 ```
-Cache: /Path/to/cach/file  
-XMLTV: /Path/to/XMLTV/file  
+Cache: /Path/to/cach/file.json  
+XMLTV: /Path/to/XMLTV/file.xml  
 ```
 
 **- Options: (Can be customized)**  
@@ -143,10 +146,14 @@ Poster Aspect: all
 
 **Some clients only use one image, even if there are several in the XMLTV file.**  
 
+---
+
 ```
 Schedule Days: 7
 ```
 EPG data for the specified days. Schedules Direct has EPG data for the next 12-14 days  
+
+---
 
 ```
 Subtitle into Description: false
@@ -168,6 +175,79 @@ Alan zieht aus, da seine Freundin Kandi und er in Las Vegas eine Million Dollar 
    <episode-num system="original-air-date">2006-09-18</episode-num>
    ...
 </programme>
+```
+
+---
+
+```
+Insert credits tag into XML file: false
+```
+**true:** Adds the credits (director, actor, producer, writer) to the program information, if available.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<programme channel="guide2go.67203.schedulesdirect.org" start="20200509134500 +0000" stop="20200509141000 +0000">
+   <title lang="de">Two and a Half Men</title>
+   <sub-title lang="de">Ich arbeite für Caligula</sub-title>
+   ...
+  <credits>
+    <director>Jamie Widdoes</director>
+    <actor role="Charlie Harper">Charlie Sheen</actor>
+    <actor role="Alan Harper">Jon Cryer</actor>
+    <actor role="Jake Harper">Angus T. Jones</actor>
+    <actor role="Judith">Marin Hinkle</actor>
+    <actor role="Evelyn Harper">Holland Taylor</actor>
+    <actor role="Rose">Melanie Lynskey</actor>
+    <writer>Chuck Lorre</writer>
+    <writer>Lee Aronsohn</writer>
+    <writer>Susan Beavers</writer>
+    <writer>Don Foster</writer>
+</credits>
+   ...
+</programme>
+```
+
+---
+
+```
+Insert rating tag into XML file: false
+```
+**true:** Adds the TV parental guidelines to the program information.  
+
+Some clients only use the first entry and ignore the language. If a rating entry exists in the same language as the Schedules Direct Lineup, it will be set to the top. In this example German (DEU).  
+
+Lineup: **DEU**-1000097-DEFAULT  
+1st rating system (Germany): Freiwillige Selbstkontrolle der Filmwirtschaft  
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<programme channel="guide2go.67203.schedulesdirect.org" start="20200509134500 +0000" stop="20200509141000 +0000">
+  <title lang="de">Two and a Half Men</title>
+  <sub-title lang="de">Ich arbeite für Caligula</sub-title>
+  <language>de</language>
+  ...
+  <rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+    <value>12</value>
+  </rating>
+  <rating system="USA Parental Rating">
+    <value>TV14</value>
+  </rating>
+  <rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+    <value>12</value>
+  </rating>
+   ...
+</programme>
+```
+
+---
+
+```
+Show download errors from Schedules Direct in the Log: false
+```
+**true:** Shows errors from Schedules Direct in the log that can occur when downloading the data.  
+
+Example:
+```
+2020/07/18 19:10:53 [ERROR] Could not find requested image. Post message to http://forums.schedulesdirect.org/viewforum.php?f=6 if you are having issues. [SD API Error Code: 5000] Program ID: EP03481925
 ```
 
 ### Create the XMLTV file using the command line (CLI): 

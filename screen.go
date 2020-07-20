@@ -48,6 +48,11 @@ func getMsg(code int) (msg string) {
   case 0204:
     msg = "Select Lineup"
 
+  case 0300:
+    msg = "Update Config File"
+  case 0301:
+    msg = "Remove Cache File"
+
   }
 
   return

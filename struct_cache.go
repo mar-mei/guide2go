@@ -54,6 +54,26 @@ type G2GCache struct {
   VideoProperties []string `json:"videoProperties,omitempty"`
 
   // Program
+  Cast []struct {
+    BillingOrder  string `json:"billingOrder"`
+    CharacterName string `json:"characterName"`
+    Name          string `json:"name"`
+    NameID        string `json:"nameId"`
+    PersonID      string `json:"personId"`
+    Role          string `json:"role"`
+  } `json:"cast"`
+  Crew []struct {
+    BillingOrder string `json:"billingOrder"`
+    Name         string `json:"name"`
+    NameID       string `json:"nameId"`
+    PersonID     string `json:"personId"`
+    Role         string `json:"role"`
+  } `json:"crew"`
+  ContentRating []struct {
+    Body    string `json:"body"`
+    Code    string `json:"code"`
+    Country string `json:"country"`
+  } `json:"contentRating"`
   Descriptions struct {
     Description1000 []struct {
       Description         string `json:"description"`

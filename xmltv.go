@@ -110,13 +110,15 @@ func (channel *G2GCache) getLogo() (icon Icon) {
   return
 }
 
-func getProgram(channel G2GCache) (p []programme) {
+func getProgram(channel G2GCache) (p []Programme) {
 
   if schedule, ok := Cache.Schedule[channel.StationID]; ok {
 
     for _, s := range schedule {
 
-      var pro programme
+      var pro Programme
+
+      var countryCode = Config.GetLineupCountry(channel.StationID)
 
       // Channel ID
       pro.Channel = fmt.Sprintf("%s.%s.schedulesdirect.org", AppName, channel.StationID)
@@ -145,20 +147,28 @@ func getProgram(channel G2GCache) (p []programme) {
       pro.Title = Cache.GetTitle(s.ProgramID, lang)
 
       // Sub Title
-
       pro.SubTitle = Cache.GetSubTitle(s.ProgramID, lang)
 
       // Description
       pro.Desc = Cache.GetDescs(s.ProgramID, pro.SubTitle.Value)
 
+      // Credits
+      pro.Credits = Cache.GetCredits(s.ProgramID)
+
       // Category
       pro.Categorys = Cache.GetCategory(s.ProgramID)
+
+      // Language
+      pro.Language = lang
 
       // EpisodeNum
       pro.EpisodeNums = Cache.GetEpisodeNum(s.ProgramID)
 
       // Icon
       pro.Icon = Cache.GetIcon(s.ProgramID[0:10])
+
+      // Rating
+      pro.Rating = Cache.GetRating(s.ProgramID, countryCode)
 
       // Video
       for _, v := range s.VideoProperties {

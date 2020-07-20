@@ -4,6 +4,7 @@ import (
   "encoding/json"
   "fmt"
   "io/ioutil"
+  "os"
   "strconv"
   "sync"
 )
@@ -26,6 +27,19 @@ func (c *cache) Init() {
 
   if c.Metadata == nil {
     c.Metadata = make(map[string]G2GCache)
+  }
+
+}
+
+func (c *cache) Remove() {
+
+  if len(Config.Files.Cache) != 0 {
+
+    showInfo("G2G", fmt.Sprintf("%s [%s]", getMsg(0301), Config.Files.Cache))
+    os.RemoveAll(Config.Files.Cache)
+
+    c.Init()
+
   }
 
 }
@@ -143,6 +157,9 @@ func (c *cache) AddProgram(gzip *[]byte, wg *sync.WaitGroup) {
     g2gCache.ResourceID = sd.ResourceID
     g2gCache.ShowType = sd.ShowType
     g2gCache.Titles = sd.Titles
+    g2gCache.ContentRating = sd.ContentRating
+    g2gCache.Cast = sd.Cast
+    g2gCache.Crew = sd.Crew
 
     c.Program[sd.ProgramID] = g2gCache
 
@@ -186,8 +203,12 @@ func (c *cache) AddMetadata(gzip *[]byte, wg *sync.WaitGroup) {
       var sdError SDError
       err = json.Unmarshal(jsonByte, &sdError)
       if err == nil {
-        err = fmt.Errorf("%s [SD API Error Code: %d] Program ID: %s", sdError.Data.Message, sdError.Data.Code, sdError.ProgramID)
-        ShowErr(err)
+
+        if Config.Options.SDDownloadErrors == true {
+          err = fmt.Errorf("%s [SD API Error Code: %d] Program ID: %s", sdError.Data.Message, sdError.Data.Code, sdError.ProgramID)
+          ShowErr(err)
+        }
+
       }
 
     } else {
@@ -411,6 +432,52 @@ func (c *cache) GetDescs(id, subTitle string) (de []Desc) {
   return
 }
 
+func (c *cache) GetCredits(id string) (cr Credits) {
+
+  if Config.Options.Credits == true {
+
+    if p, ok := c.Program[id]; ok {
+
+      // Crew
+      for _, crew := range p.Crew {
+
+        switch crew.Role {
+
+        case "Director":
+          cr.Director = append(cr.Director, Director{Value: crew.Name})
+
+        case "Producer":
+          cr.Producer = append(cr.Producer, Producer{Value: crew.Name})
+
+        case "Presenter":
+          cr.Presenter = append(cr.Presenter, Presenter{Value: crew.Name})
+
+        case "Writer":
+          cr.Writer = append(cr.Writer, Writer{Value: crew.Name})
+
+        }
+
+      }
+
+      // Cast
+      for _, cast := range p.Cast {
+
+        switch cast.Role {
+
+        case "Actor":
+          cr.Actor = append(cr.Actor, Actor{Value: cast.Name, Role: cast.CharacterName})
+
+        }
+
+      }
+
+    }
+
+  }
+
+  return
+}
+
 func (c *cache) GetCategory(id string) (ca []Category) {
 
   if p, ok := c.Program[id]; ok {
@@ -562,6 +629,33 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 
       if maxWidth > 0 {
         i = append(i, Icon{Src: uri, Height: maxHeight, Width: maxWidth})
+      }
+
+    }
+
+  }
+
+  return
+}
+
+func (c *cache) GetRating(id, countryCode string) (ra []Rating) {
+
+  if Config.Options.Rating == true {
+
+    if p, ok := c.Program[id]; ok {
+
+      for _, r := range p.ContentRating {
+
+        /*
+           If a country code is available that is identical to that of the lineup,
+           this entry is placed at the beginning of the slice. Plex Hack!!!
+        */
+        if countryCode == r.Country {
+          ra = append([]Rating{{Value: r.Code, System: r.Body}}, ra...)
+        } else {
+          ra = append(ra, Rating{Value: r.Code, System: r.Body})
+        }
+
       }
 
     }

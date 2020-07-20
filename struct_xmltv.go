@@ -1,18 +1,7 @@
 package main
 
-import "encoding/xml"
-
-// XMLTV : XMLTV
-type XMLTV struct {
-  XMLName   xml.Name     `xml:"tv"`
-  Info      string       `xml:"source-info-url,attr"`
-  Generator string       `xml:"generator-info-name,attr"`
-  Source    string       `xml:"source-info-name,attr"`
-  Channel   []ChannelXML `xml:"channel"`
-  Program   []Program    `xml:"programme"`
-}
-
-type programme struct {
+// Programme : Programme
+type Programme struct {
   Channel string `xml:"channel,attr"`
   Start   string `xml:"start,attr"`
   Stop    string `xml:"stop,attr"`
@@ -20,14 +9,21 @@ type programme struct {
   Title    []Title  `xml:"title"`
   SubTitle SubTitle `xml:"sub-title"`
 
-  Desc        []Desc       `xml:"desc"`
+  Desc []Desc `xml:"desc"`
+
+  // Credits
+  Credits Credits `xml:"credits,omitempty"`
+
   Categorys   []Category   `xml:"category"`
+  Language    string       `xml:"language,omitempty"`
   EpisodeNums []EpisodeNum `xml:"episode-num"`
 
   //Icon
   Icon  []Icon `xml:"icon"`
   Video Video  `xml:"video"`
   Audio Audio  `xml:"audio"`
+
+  Rating []Rating `xml:"rating,omitempty"`
 
   PreviouslyShown *PreviouslyShown `xml:"previously-shown"`
   New             *New             `xml:"new,omitempty"`
@@ -53,42 +49,52 @@ type Icon struct {
   Width  int    `xml:"width,attr"`
 }
 
-// Program : Channel program
-type Program struct {
-  Channel string `xml:"channel,attr"`
-  Start   string `xml:"start,attr"`
-  Stop    string `xml:"stop,attr"`
-
-  Title    []Title  `xml:"title"`
-  SubTitle SubTitle `xml:"sub-title"`
-
-  Desc        []Desc       `xml:"desc"`
-  Categorys   []Category   `xml:"category"`
-  EpisodeNums []EpisodeNum `xml:"episode-num"`
-
-  //Icon
-  Icon  []Icon `xml:"icon"`
-  Video Video  `xml:"video"`
-  Audio Audio  `xml:"audio"`
-
-  PreviouslyShown *PreviouslyShown `xml:"previously-shown"`
-  New             *New             `xml:"new,omitempty"`
-  Live            *Live            `xml:"live"`
-}
-
+// Title : Title
 type Title struct {
   Value string `xml:",chardata"`
   Lang  string `xml:"lang,attr"`
 }
 
+// SubTitle : Sub Title
 type SubTitle struct {
   Value string `xml:",chardata"`
   Lang  string `xml:"lang,attr"`
 }
 
+// Desc : Description
 type Desc struct {
   Value string `xml:",chardata"`
   Lang  string `xml:"lang,attr"`
+}
+
+// Credits : Credits
+type Credits struct {
+  Director  []Director  `xml:"director,omitempty"`
+  Actor     []Actor     `xml:"actor,omitempty"`
+  Producer  []Producer  `xml:"producer,omitempty"`
+  Presenter []Presenter `xml:"presenter,omitempty"`
+  Writer    []Writer    `xml:"writer,omitempty"`
+}
+
+type Director struct {
+  Value string `xml:",chardata"`
+}
+
+type Producer struct {
+  Value string `xml:",chardata"`
+}
+
+type Presenter struct {
+  Value string `xml:",chardata"`
+}
+
+type Actor struct {
+  Value string `xml:",chardata"`
+  Role  string `xml:"role,attr,omitempty"`
+}
+
+type Writer struct {
+  Value string `xml:",chardata"`
 }
 
 type Category struct {
@@ -105,6 +111,12 @@ type ProgramIcon struct {
   Src    string `xml:"src,attr"`
   Height int64  `xml:"height,attr"`
   Width  int64  `xml:"width,attr"`
+}
+
+type Rating struct {
+  System string `xml:"system,attr"`
+  Value  string `xml:"value"`
+  Icon   []Icon `xml:"icon",omitempty`
 }
 
 type Video struct {

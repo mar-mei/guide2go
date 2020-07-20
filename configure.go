@@ -1,6 +1,7 @@
 package main
 
 import (
+  "bytes"
   "fmt"
   "io/ioutil"
   "os"
@@ -49,8 +50,13 @@ func Configure(filename string) (err error) {
     menu.Entry[1] = entry
     if len(Config.Account.Username) == 0 || len(Config.Account.Password) == 0 {
       entry.account()
-      sd.Login()
+      err = sd.Login()
+      if err != nil {
+        os.RemoveAll(Config.File + ".yaml")
+        os.Exit(0)
+      }
       sd.Status()
+
     }
 
     // Add Lineup
@@ -117,6 +123,7 @@ func Configure(filename string) (err error) {
 func (c *config) Open() (err error) {
 
   data, err := ioutil.ReadFile(fmt.Sprintf("%s.yaml", c.File))
+  var rmCacheFile, newOptions bool
 
   if err != nil {
     // File is missing, create new config file (YAML)
@@ -133,6 +140,46 @@ func (c *config) Open() (err error) {
   err = yaml.Unmarshal(data, &c)
   if err != nil {
     return
+  }
+
+  /*
+     New config options
+  */
+
+  // Credits tag
+  if !bytes.Contains(data, []byte("credits tag")) {
+    rmCacheFile = true
+    newOptions = true
+    Config.Options.Credits = true
+    showInfo("G2G", fmt.Sprintf("%s (credits) [%s]", getMsg(0300), Config.File))
+  }
+
+  // Rating tag
+  if !bytes.Contains(data, []byte("rating tag")) {
+    rmCacheFile = true
+    newOptions = true
+    Config.Options.Rating = true
+    showInfo("G2G", fmt.Sprintf("%s (rating) [%s]", getMsg(0300), Config.File))
+  }
+
+  // SD errors
+  if !bytes.Contains(data, []byte("download errors")) {
+    newOptions = true
+    Config.Options.SDDownloadErrors = false
+    showInfo("G2G", fmt.Sprintf("%s (SD errors) [%s]", getMsg(0300), Config.File))
+  }
+
+  if newOptions == true {
+
+    err = c.Save()
+    if err != nil {
+      return
+    }
+
+  }
+
+  if rmCacheFile == true {
+    Cache.Remove()
   }
 
   return
@@ -163,6 +210,8 @@ func (c *config) InitConfig() {
   c.Options.PosterAspect = "all"
   c.Options.Schedule = 7
   c.Options.SubtitleIntoDescription = false
+  c.Options.Credits = false
+  c.Options.Rating = false
 
   return
 }
@@ -181,6 +230,20 @@ func (c *config) GetChannelList(lineup string) (list []string) {
         list = append(list, channel.ID)
       }
 
+    }
+
+  }
+
+  return
+}
+
+func (c *config) GetLineupCountry(id string) (countryCode string) {
+
+  for _, channel := range c.Station {
+
+    if id == channel.ID {
+      countryCode = strings.Split(channel.Lineup, "-")[0]
+      return
     }
 
   }
