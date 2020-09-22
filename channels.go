@@ -89,9 +89,9 @@ func (e *Entry) manageChannels(sd *SD) (err error) {
         var input string
 
         ch.Name = fmt.Sprintf("%s", station.Name)
-        ch.ID = station.StationID
+        ch.ID = string(station.StationID)
 
-        if ContainsString(Config.ChannelIDs, station.StationID) != -1 {
+        if ContainsString(Config.ChannelIDs, string(station.StationID)) != -1 {
           existing = "+"
         } else {
           existing = "-"
@@ -182,7 +182,7 @@ func (c *config) GetChannels() {
   c.ChannelIDs = []string{}
 
   for _, channel := range c.Station {
-    c.ChannelIDs = append(c.ChannelIDs, channel.ID)
+    c.ChannelIDs = append(c.ChannelIDs, string(channel.ID))
   }
 
   return

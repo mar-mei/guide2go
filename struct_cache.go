@@ -3,6 +3,8 @@ package main
 import (
   "sync"
   "time"
+  "encoding/json"
+
 )
 
 type cache struct {
@@ -22,7 +24,7 @@ type G2GCache struct {
   ProgramID string `json:"programID,omitempty"`
 
   // Channel
-  StationID         string   `json:"stationID,omitempty"`
+  StationID         json.Number   `json:"stationID,omitempty"`
   Name              string   `json:"name,omitempty"`
   Callsign          string   `json:"callsign,omitempty"`
   Affiliate         string   `json:"affiliate,omitempty"`
@@ -127,5 +129,5 @@ type SDSchedule struct {
     } `json:"ratings"`
     VideoProperties []string `json:"videoProperties"`
   } `json:"programs"`
-  StationID string `json:"stationID"`
+  StationID json.Number `json:"stationID"`
 }

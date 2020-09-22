@@ -240,11 +240,11 @@ func (c *config) GetChannelList(lineup string) (list []string) {
     switch len(lineup) {
 
     case 0:
-      list = append(list, channel.ID)
+      list = append(list, string(channel.ID))
 
     default:
       if lineup == channel.Lineup {
-        list = append(list, channel.ID)
+        list = append(list, string(channel.ID))
       }
 
     }
@@ -258,7 +258,7 @@ func (c *config) GetLineupCountry(id string) (countryCode string) {
 
   for _, channel := range c.Station {
 
-    if id == channel.ID {
+    if id == string(channel.ID) {
       countryCode = strings.Split(channel.Lineup, "-")[0]
       return
     }

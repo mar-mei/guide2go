@@ -62,7 +62,7 @@ func (c *cache) AddStations(data *[]byte, lineup string) {
 
   for _, sd := range sdData.Stations {
 
-    if ContainsString(channelIDs, sd.StationID) != -1 {
+    if ContainsString(channelIDs, string(sd.StationID)) != -1 {
 
       g2gCache.StationID = sd.StationID
       g2gCache.Name = sd.Name
@@ -71,7 +71,7 @@ func (c *cache) AddStations(data *[]byte, lineup string) {
       g2gCache.BroadcastLanguage = sd.BroadcastLanguage
       g2gCache.Logo = sd.Logo
 
-      c.Channel[sd.StationID] = g2gCache
+      c.Channel[string(sd.StationID)] = g2gCache
 
     }
 
@@ -95,8 +95,8 @@ func (c *cache) AddSchedule(data *[]byte) {
 
   for _, sd := range sdData {
 
-    if _, ok := c.Schedule[sd.StationID]; !ok {
-      c.Schedule[sd.StationID] = []G2GCache{}
+    if _, ok := c.Schedule[string(sd.StationID)]; !ok {
+      c.Schedule[string(sd.StationID)] = []G2GCache{}
     }
 
     for _, p := range sd.Programs {
@@ -111,7 +111,7 @@ func (c *cache) AddSchedule(data *[]byte) {
       g2gCache.Ratings = p.Ratings
       g2gCache.VideoProperties = p.VideoProperties
 
-      c.Schedule[sd.StationID] = append(c.Schedule[sd.StationID], g2gCache)
+      c.Schedule[string(sd.StationID)] = append(c.Schedule[string(sd.StationID)], g2gCache)
 
     }
 

@@ -1,6 +1,7 @@
 package main
 
 import "time"
+import "encoding/json"
 
 type SDStatus struct {
   Message string `json:"message"`
@@ -125,7 +126,7 @@ type SD struct {
 
       // GET
       Map []struct {
-        StationID string `json:"stationID"`
+        StationID json.Number `json:"stationID"`
         Channel   string `json:"channel"`
       } `json:"map"`
       Stations []Station `json:"stations"`
@@ -146,7 +147,7 @@ type SD struct {
 
 // Station : Station SD API
 type Station struct {
-  StationID           string   `json:"stationID"`
+  StationID           json.Number   `json:"stationID"`
   Name                string   `json:"name"`
   Callsign            string   `json:"callsign"`
   Affiliate           string   `json:"affiliate,omitempty"`
@@ -250,7 +251,7 @@ type Data struct {
 type SDStation struct {
   Map []struct {
     Channel   string `json:"channel"`
-    StationID string `json:"stationID"`
+    StationID json.Number `json:"stationID"`
   } `json:"map"`
   Metadata struct {
     Lineup    string `json:"lineup"`
@@ -275,7 +276,7 @@ type SDStation struct {
       Md5    string `json:"md5"`
     } `json:"logo,omitempty"`
     Name        string `json:"name"`
-    StationID   string `json:"stationID"`
+    StationID   json.Number `json:"stationID"`
     StationLogo []struct {
       URL    string `json:"URL"`
       Height int    `json:"height"`
