@@ -565,7 +565,9 @@ func (c *cache) GetEpisodeNum(id string) (ep []EpisodeNum) {
   return
 }
 
-func (c *cache) GetPreviouslyShown(id string) (prev PreviouslyShown) {
+func (c *cache) GetPreviouslyShown(id string) (prev *PreviouslyShown) {
+
+  prev = &PreviouslyShown{}
 
   if p, ok := c.Program[id]; ok {
     prev.Start = p.OriginalAirDate

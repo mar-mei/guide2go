@@ -28,9 +28,9 @@ type Programme struct {
 
   Rating []Rating `xml:"rating,omitempty"`
 
-  PreviouslyShown PreviouslyShown `xml:"previously-shown,omitempty"`
-  New             *New            `xml:"new"`
-  Live            *Live           `xml:"live"`
+  PreviouslyShown *PreviouslyShown `xml:"previously-shown,omitempty"`
+  New             *New             `xml:"new"`
+  Live            *Live            `xml:"live"`
 }
 
 // ChannelXML : Channel
