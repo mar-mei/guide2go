@@ -7,7 +7,7 @@ import (
   "io/ioutil"
   "net/http"
 )
-
+var Token string
 // Init : Init Schedules Direct
 func (sd *SD) Init() (err error) {
 
@@ -43,7 +43,7 @@ func (sd *SD) Init() (err error) {
     showInfo("SD", fmt.Sprintf("Login...%s", sd.Resp.Login.Message))
 
     sd.Token = sd.Resp.Login.Token
-
+    Token = sd.Token
     return
   }
 

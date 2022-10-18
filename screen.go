@@ -53,6 +53,11 @@ func getMsg(code int) (msg string) {
   case 0301:
     msg = "Remove Cache File"
 
+  case 401:
+    msg = "Download images"
+
+  case 402:
+    msg = "Dowloaded Images Path"
   }
 
   return

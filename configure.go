@@ -172,6 +172,27 @@ func (c *config) Open() (err error) {
     showInfo("G2G", fmt.Sprintf("%s (rating) [%s]", getMsg(0300), Config.File))
 
   }
+  // Download Images from TV Shows
+  if !bytes.Contains(data, []byte("TVShow Images:")) {
+
+    newOptions = true
+
+    Config.Options.TVShowImages = false
+
+    showInfo("G2G", fmt.Sprintf("%s (TVShows images) [%s]", getMsg(401), Config.File))
+
+  }
+
+  // Download Images from TV Shows
+  if !bytes.Contains(data, []byte("Images Path:")) {
+
+    newOptions = true
+
+    Config.Options.ImagesPath = "/data/images"
+
+    showInfo("G2G", fmt.Sprintf("%s (TVShows images Path) [%s]", getMsg(402), Config.File))
+
+  }
 
   // SD errors
   if !bytes.Contains(data, []byte("download errors")) {
@@ -222,11 +243,13 @@ func (c *config) InitConfig() {
 
   // Options
   c.Options.PosterAspect = "all"
+  c.Options.TVShowImages = false
   c.Options.Schedule = 7
   c.Options.SubtitleIntoDescription = false
   c.Options.Credits = false
+  c.Options.ImagesPath = "/data/images/"
   Config.Options.Rating.Guidelines = true
-  Config.Options.Rating.Countries = []string{"DEU", "CHE", "USA"}
+  Config.Options.Rating.Countries = []string{"USA", "CHE", "DE"}
   Config.Options.Rating.CountryCodeAsSystem = false
   Config.Options.Rating.MaxEntries = 1
 

@@ -7,6 +7,8 @@ import (
   "os"
   "strconv"
   "sync"
+  "net/http"
+  "io"
 )
 
 // Cache : Cache file
@@ -576,12 +578,26 @@ func (c *cache) GetPreviouslyShown(id string) (prev *PreviouslyShown) {
   return
 }
 
+func GetImageUrl(urlid string, token string, name string) string{
+	url := urlid + "?" + "token=" + token
+  path := Config.Options.ImagesPath
+  filename := path + name
+  if _, err := os.Stat(filename); err != nil {
+	  file, _ := os.Create(filename)
+	  defer file.Close()
+	  req, _ := http.Get(url)
+	  io.Copy(file, req.Body)
+  }
+  return filename
+}
+
 func (c *cache) GetIcon(id string) (i []Icon) {
 
   var aspects = []string{"2x3", "4x3", "3x4", "16x9"}
   var uri string
   var width, height int
   var err error
+  var name string
 
   switch Config.Options.PosterAspect {
 
@@ -594,17 +610,16 @@ func (c *cache) GetIcon(id string) (i []Icon) {
   }
 
   if m, ok := c.Metadata[id]; ok {
+    var path string
 
     for _, aspect := range aspects {
 
       var maxWidth, maxHeight int
 
       for _, icon := range m.Data {
-
+        name = icon.URI
         if icon.URI[0:7] != "http://" && icon.URI[0:8] != "https://" {
-
           icon.URI = fmt.Sprintf("https://json.schedulesdirect.org/20141201/image/%s", icon.URI)
-
         }
 
         if icon.Aspect == aspect {
@@ -623,6 +638,9 @@ func (c *cache) GetIcon(id string) (i []Icon) {
             maxWidth = width
             maxHeight = height
             uri = icon.URI
+            if Config.Options.TVShowImages {
+              path = GetImageUrl(uri, Token, name)
+            }
           }
 
         }
@@ -630,7 +648,10 @@ func (c *cache) GetIcon(id string) (i []Icon) {
       }
 
       if maxWidth > 0 {
-        i = append(i, Icon{Src: uri, Height: maxHeight, Width: maxWidth})
+        if Config.Options.TVShowImages {
+          path = GetImageUrl(uri, Token, name)
+        }
+        i = append(i, Icon{Src: path, Height: maxHeight, Width: maxWidth})
       }
 
     }
