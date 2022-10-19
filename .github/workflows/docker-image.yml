@@ -14,7 +14,7 @@ jobs:
     - name: go build
       run: go build -o guide2go
     - name: docker login
-      run: docker login -u chuchodavids --password $docker_token
+      run: docker login -u chuchodavids --password $DOCKER_TOKEN
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag chuchodavids/guidetogo:$(date +%s)
     - name: push
