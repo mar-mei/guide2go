@@ -1,7 +1,12 @@
 FROM nginx:1.22.0
+WORKDIR /app/
+RUN adduser --disabled-password guide2go
+ENV images_path="/data/images"
 
-COPY guide2go /config/guide2go
+COPY --chown=guide2go:guide2go guide2go /app/guide2go
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /tmp/nginx.conf
+RUN envsubst < /tmp/nginx.conf > /etc/nginx/nginx.conf
+RUN chown guide2go /app/guide2go
 
-CMD [ "nginx" ]
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
