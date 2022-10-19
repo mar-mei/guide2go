@@ -1,5 +1,13 @@
+# This is a Fork of the abandoned (?) Guide2Go project
+I implemented changes that were missing in the current Guide2Go version.
 
-# Guide2Go
+**Recent changes:**
+1. Grab images from Schedules Direct in a local folder. This script will download show images and save them in a folder. Then it will expose those images using Nginx. This is useful for players like Emby. Emby will use the url to grab the images for the EPG.
+1. For players like tiviMate I added the "live" and "new" icon in the tittle of the programm. This is usually auto added in Emby or other IPTV players, but TiviMate does not do this.
+
+Thats basically it for now.
+
+## Guide2Go
 Guide2Go is written in Go and creates an XMLTV file from the Schedules Direct JSON API.  
 **Configuration files from version 1.0.6 or earlier are not compatible!**
 
