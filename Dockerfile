@@ -9,5 +9,5 @@ COPY nginx.conf /tmp/nginx.conf
 RUN envsubst < /tmp/nginx.conf > /etc/nginx/nginx.conf
 RUN apt update && apt-get install cron -y
 COPY cronjob /tmp/cronjob
-RUN contab /tmp/cronjob
+RUN crontab /tmp/cronjob
 CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
