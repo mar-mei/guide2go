@@ -12,6 +12,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: go build
-      run: go build . -o guide2go
+      run: go build -o guide2go
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag guidetogo:$(date +%s)
