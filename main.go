@@ -1,10 +1,10 @@
 package main
 
 import (
-  "flag"
-  "fmt"
-  "log"
-  "os"
+	"flag"
+	"fmt"
+	"log"
+	"os"
 )
 
 // AppName : App name
@@ -22,13 +22,20 @@ func main() {
   var config = flag.String("config", "", "= Get data from Schedules Direct with configuration file. [filename.yaml]")
 
   var h = flag.Bool("h", false, ": Show help")
-  flag.Parse()
 
+  
+  var imageServer = flag.String("server", "3000", "= Starts server for images")
+  flag.Parse()
   showInfo("G2G", fmt.Sprintf("Version: %s", Version))
 
   if *h {
     fmt.Println()
     flag.Usage()
+    os.Exit(0)
+  }
+  if *imageServer != ""{
+    var port string = *imageServer
+    Server(port)
     os.Exit(0)
   }
 
