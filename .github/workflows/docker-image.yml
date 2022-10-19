@@ -11,14 +11,12 @@ jobs:
     - name: go build
       run: go build -o guide2go
   image-build-push:
-    
+    needs: go-build
     runs-on: self-hosted
     steps:
     - name: Build the Docker image
-      run: |
-        new_tag=$(date +%s)
-        docker build . --file Dockerfile --tag chuchodavids/guide2go:"$new_tag" --tag chuchodavids/guide2go:latest
+      run: docker build . --file Dockerfile --tag chuchodavids/guide2go:$(date +%s) --tag chuchodavids/guide2go:latest
     - name: push
-      run: docker push chuchodavids/guide2go:"$new_tag"
+      run: docker push chuchodavids/guide2go:$(date +%s)
     - name: push latest
       run: docker push chuchodavids/guide2go:latest
