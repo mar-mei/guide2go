@@ -638,9 +638,9 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 						maxWidth = width
 						maxHeight = height
 						uri = icon.URI
-						if Config.Options.TVShowImages {
-							path = GetImageUrl(uri, Token, name)
-						}
+						// if Config.Options.TVShowImages {
+						// 	path = GetImageUrl(uri, Token, name)
+						// }
 					}
 
 				}
