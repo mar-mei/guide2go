@@ -4,13 +4,18 @@ on:
   push:
     branches: ["master"]
 jobs:
-  build:
+  go-build:
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
     - name: go build
       run: go build -o guide2go
+  image-build-push:
+    runs-on: self-hosted
+    steps:
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag chuchodavids/guide2go:$(date +%s)
+      run: docker build . --file Dockerfile --tag chuchodavids/guide2go:$(date +%s) --tag chuchodavids/guide2go:latest
     - name: push
       run: docker push chuchodavids/guide2go:$(date +%s)
+    - name: push latest
+      run: docker push chuchodavids/guide2go:latest

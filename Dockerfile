@@ -8,4 +8,4 @@ COPY guide2go /app/guide2go
 COPY nginx.conf /tmp/nginx.conf
 RUN envsubst < /tmp/nginx.conf > /etc/nginx/nginx.conf
 
-ENTRYPOINT ["/usr/sbin/nginx", "-g", "daemon off;"]
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
