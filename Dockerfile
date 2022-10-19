@@ -10,3 +10,4 @@ RUN envsubst < /tmp/nginx.conf > /etc/nginx/nginx.conf
 RUN chown guide2go /app/guide2go
 
 CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
+USER guide2go
