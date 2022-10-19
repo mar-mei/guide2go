@@ -32,7 +32,7 @@ func main() {
 		flag.Usage()
 		os.Exit(0)
 	}
-	if *imageServer != "run" {
+	if *imageServer == "run" {
 		Server()
 		os.Exit(0)
 	}
