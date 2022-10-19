@@ -11,6 +11,6 @@ jobs:
     - name: go build
       run: go build -o guide2go
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag chuchodavids/guidetogo:$(date +%s)
+      run: docker build . --file Dockerfile --tag chuchodavids/guide2go:$(date +%s)
     - name: push
-      run: docker push chuchodavids/guidetogo:$(date +%s)
+      run: docker push chuchodavids/guide2go:$(date +%s)
