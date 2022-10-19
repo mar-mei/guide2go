@@ -13,5 +13,9 @@ jobs:
     - uses: actions/checkout@v3
     - name: go build
       run: go build -o guide2go
+    - name: docker login
+      run: docker login -u chuchodavids --password $docker_token
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag guidetogo:$(date +%s)
+      run: docker build . --file Dockerfile --tag chuchodavids/guidetogo:$(date +%s)
+    - name: push
+      run: docker push chuchodavids/guidetogo:$(date +%s)
