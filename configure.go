@@ -188,7 +188,7 @@ func (c *config) Open() (err error) {
 
     newOptions = true
 
-    Config.Options.ImagesPath = "/data/images"
+    Config.Options.ImagesPath = "${images_path}"
 
     showInfo("G2G", fmt.Sprintf("%s (TVShows images Path) [%s]", getMsg(402), Config.File))
 
