@@ -1,6 +1,7 @@
 FROM nginx:1.22.0
 
 ENV images_path="/data/images"
+ENV ip_address="127.0.0.1"
 
 COPY guide2go /usr/local/bin/guide2go
 

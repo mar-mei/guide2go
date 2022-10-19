@@ -2,7 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["master"]
+    branches: 
+     - master
+     - development
 jobs:
   go-build:
     runs-on: self-hosted
@@ -10,7 +12,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: go build
       run: go build -o guide2go
-  image-build-push:
+  image-build-push-prod:
     needs: go-build
     runs-on: self-hosted
     steps:
@@ -20,3 +22,12 @@ jobs:
         docker build . --file Dockerfile --tag chuchodavids/guide2go:"$new_tag" --tag chuchodavids/guide2go:latest
         docker push chuchodavids/guide2go:"$new_tag"
         docker push chuchodavids/guide2go:latest
+  image-build-push-dev:
+    needs: go-build
+    runs-on: self-hosted
+    if: github.repository == 'chuchodavids/guide2go@development'
+    steps:
+    - name: Build the Docker image
+      run: |
+        docker build . --file Dockerfile --tag chuchodavids/guide2go:development
+        docker push chuchodavids/guide2go:development
