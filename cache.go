@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -584,9 +585,14 @@ func GetImageUrl(urlid string, token string, name string) string {
 	if _, err := os.Stat(filename); err != nil {
 		file, _ := os.Create(filename)
 		defer file.Close()
-		req, _ := http.Get(url)
+		req, fail := http.Get(url)
+		if fail != nil {
+			log.Panic("Error, image download limit reached")
+			os.Exit(1)
+		}
 		io.Copy(file, req.Body)
 	}
+
 	return filename
 }
 
