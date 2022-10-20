@@ -579,9 +579,8 @@ func (c *cache) GetPreviouslyShown(id string) (prev *PreviouslyShown) {
 }
 
 func GetImageUrl(urlid string, token string, name string) string {
-	url := urlid + "?" + "token=" + token
-	path := Config.Options.ImagesPath
-	filename := path + name
+	url := urlid + "?token=" + token
+	filename := Config.Options.ImagesPath + name
 	if _, err := os.Stat(filename); err != nil {
 		file, _ := os.Create(filename)
 		defer file.Close()
@@ -622,7 +621,7 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 					icon.URI = fmt.Sprintf("https://json.schedulesdirect.org/20141201/image/%s", icon.URI)
 				}
 
-				if icon.Aspect == aspect && (icon.Category == "Poster Art" || icon.Category == "Banner-L1" || icon.Category == "Banner-L2") {
+				if icon.Aspect == aspect && (icon.Category == "Poster Art" || icon.Category == "VOD Art" || icon.Category == "Banner-L1" || icon.Category == "Banner-L2") {
 
 					width, err = strconv.Atoi(icon.Width)
 					if err != nil {
@@ -638,9 +637,6 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 						maxWidth = width
 						maxHeight = height
 						uri = icon.URI
-						// if Config.Options.TVShowImages {
-						// 	path = GetImageUrl(uri, Token, name)
-						// }
 					}
 
 				}
@@ -649,10 +645,10 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 
 			if maxWidth > 0 {
 				if Config.Options.TVShowImages {
-					path = GetImageUrl(uri, Token, name)
+					GetImageUrl(uri, Token, name)
 				}
 				ip := os.Getenv("IP_ADDRESS") + ":" + os.Getenv("PORT") + "/"
-				path = ip + uri
+				path = ip + name
 				i = append(i, Icon{Src: path, Height: maxHeight, Width: maxWidth})
 			}
 
