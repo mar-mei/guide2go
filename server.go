@@ -8,11 +8,13 @@ import (
 
 func Server() {
 	port := os.Getenv("PORT")
-	fs := http.FileServer(http.Dir(os.Getenv("IMAGES_PATH")))
-	http.Handle("/", fs)
-
-	log.Printf("Listening on :%s...", port)
-	err := http.ListenAndServe(":"+port, nil)
+	path := os.Getenv("IMAGES_PATH")
+	fs := http.FileServer(http.Dir(os.Getenv(path)))
+	log.Printf("Listening on: %s", port)
+	log.Printf("using path: %s", path)
+	addr := ":" + port
+	log.Printf("using addr: %s", addr)
+	err := http.ListenAndServe(addr, fs)
 	if err != nil {
 		log.Fatal(err)
 	}
