@@ -622,7 +622,7 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 					icon.URI = fmt.Sprintf("https://json.schedulesdirect.org/20141201/image/%s", icon.URI)
 				}
 
-				if icon.Aspect == aspect {
+				if icon.Aspect == aspect && (icon.Category == "Poster Art" || icon.Category == "Banner-L1" || icon.Category == "Banner-L2") {
 
 					width, err = strconv.Atoi(icon.Width)
 					if err != nil {
@@ -651,6 +651,8 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 				if Config.Options.TVShowImages {
 					path = GetImageUrl(uri, Token, name)
 				}
+				ip := os.Getenv("IP_ADDRESS") + ":" + os.Getenv("PORT") + "/"
+				path = ip + uri
 				i = append(i, Icon{Src: path, Height: maxHeight, Width: maxWidth})
 			}
 
