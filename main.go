@@ -32,10 +32,6 @@ func main() {
 		flag.Usage()
 		os.Exit(0)
 	}
-	if *imageServer == "run" {
-		Server()
-		os.Exit(0)
-	}
 
 	if len(*configure) != 0 {
 		err := Configure(*configure)
@@ -51,6 +47,10 @@ func main() {
 		if err != nil {
 			ShowErr(err)
 		}
+		os.Exit(0)
+	}
+	if *imageServer == "run" {
+		Server()
 		os.Exit(0)
 	}
 
