@@ -23,7 +23,7 @@ func main() {
 
 	var h = flag.Bool("h", false, ": Show help")
 
-	var imageServer = flag.String("server", "run", "= Starts server for images")
+	var imageServer = flag.Bool("server", false, "= Starts server for images")
 	flag.Parse()
 	showInfo("G2G", fmt.Sprintf("Version: %s", Version))
 
@@ -49,7 +49,7 @@ func main() {
 		}
 		os.Exit(0)
 	}
-	if *imageServer == "run" {
+	if *imageServer {
 		Server()
 		os.Exit(0)
 	}
