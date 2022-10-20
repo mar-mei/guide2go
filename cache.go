@@ -596,8 +596,7 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 	var uri string
 	var width, height int
 	var err error
-	var name string
-
+	var nameFinal string
 	switch Config.Options.PosterAspect {
 
 	case "all":
@@ -610,14 +609,15 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 
 	if m, ok := c.Metadata[id]; ok {
 		var path string
-
+		var nameTemp string
 		for _, aspect := range aspects {
 
 			var maxWidth, maxHeight int
 
 			for _, icon := range m.Data {
-				name = icon.URI
+
 				if icon.URI[0:7] != "http://" && icon.URI[0:8] != "https://" {
+					nameTemp = icon.URI
 					icon.URI = fmt.Sprintf("https://json.schedulesdirect.org/20141201/image/%s", icon.URI)
 				}
 
@@ -637,6 +637,7 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 						maxWidth = width
 						maxHeight = height
 						uri = icon.URI
+						nameFinal = nameTemp
 					}
 
 				}
@@ -645,10 +646,10 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 
 			if maxWidth > 0 {
 				if Config.Options.TVShowImages {
-					GetImageUrl(uri, Token, name)
+					GetImageUrl(uri, Token, nameFinal)
 				}
 				ip := os.Getenv("IP_ADDRESS") + ":" + os.Getenv("PORT") + "/"
-				path = ip + name
+				path = ip + uri
 				i = append(i, Icon{Src: path, Height: maxHeight, Width: maxWidth})
 			}
 
