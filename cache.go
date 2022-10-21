@@ -660,7 +660,7 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 					GetImageUrl(uri, Token, nameFinal)
 				}
 				ip := os.Getenv("IP_ADDRESS") + ":" + os.Getenv("PORT") + "/"
-				path = ip + nameFinal
+				path = "http://" + ip + nameFinal
 				i = append(i, Icon{Src: path, Height: maxHeight, Width: maxWidth})
 			}
 
