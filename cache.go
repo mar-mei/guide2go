@@ -9,11 +9,13 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 )
 
 // Cache : Cache file
 var Cache cache
+var ImageError bool = false
 
 // Init : Inti cache
 func (c *cache) Init() {
@@ -579,21 +581,24 @@ func (c *cache) GetPreviouslyShown(id string) (prev *PreviouslyShown) {
 	return
 }
 
-func GetImageUrl(urlid string, token string, name string) string {
+func GetImageUrl(urlid string, token string, name string) {
 	url := urlid + "?token=" + token
 	filename := Config.Options.ImagesPath + name
-	if _, err := os.Stat(filename); err != nil {
+	if a, err := os.Stat(filename); err != nil || a.Size() < 500 {
 		file, _ := os.Create(filename)
 		defer file.Close()
-		req, fail := http.Get(url)
-		if fail != nil {
-			log.Panic("Error, image download limit reached")
-			os.Exit(1)
+		req, _ := http.Get(url)
+		resp, _ := io.ReadAll(req.Body)
+		text := string(resp)
+		if strings.Contains(text, "MAX_IMAGE_DOWNLOADS") {
+			log.Println("max image limit downloaded -- skipping image download")
+			ImageError = true
+			return
 		}
+		req.Body.Close()
 		io.Copy(file, req.Body)
 	}
-
-	return filename
+	return
 }
 
 func (c *cache) GetIcon(id string) (i []Icon) {
@@ -651,11 +656,11 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 			}
 
 			if maxWidth > 0 {
-				if Config.Options.TVShowImages {
+				if Config.Options.TVShowImages && !ImageError {
 					GetImageUrl(uri, Token, nameFinal)
 				}
 				ip := os.Getenv("IP_ADDRESS") + ":" + os.Getenv("PORT") + "/"
-				path = ip + uri
+				path = ip + nameFinal
 				i = append(i, Icon{Src: path, Height: maxHeight, Width: maxWidth})
 			}
 
