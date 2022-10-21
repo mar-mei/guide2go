@@ -4,7 +4,7 @@ on:
   push:
     branches: 
      - master
-     - development
+
 jobs:
   go-build:
     runs-on: self-hosted
@@ -19,6 +19,6 @@ jobs:
     - name: Build the Docker image
       run: |
         new_tag=$(date +%s)
-        docker build . --file Dockerfile --tag chuchodavids/guide2go:"$new_tag" --tag chuchodavids/guide2go:latest
+        docker build . --file Dockerfile --tag chuchodavids/guide2go:"$new_tag" --tag chuchodavids/guide2go:stable
         docker push chuchodavids/guide2go:"$new_tag"
-        docker push chuchodavids/guide2go:latest
+        docker push chuchodavids/guide2go:stable
