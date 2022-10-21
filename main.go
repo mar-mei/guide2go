@@ -47,17 +47,21 @@ func main() {
 		if err != nil {
 			ShowErr(err)
 		}
-		os.Exit(0)
+		if Config.Options.TVShowImages == true {
+			Server()
+			os.Exit(0)
+		}
+
 	}
 	if *imageServer {
 		Server()
 		os.Exit(0)
 	}
-
 }
 
 // ShowErr : Show error on screen
 func ShowErr(err error) {
 	var msg = fmt.Sprintf("[ERROR] %s", err)
 	log.Println(msg)
+
 }
