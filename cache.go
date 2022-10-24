@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"sync"
 )
 
@@ -588,15 +587,15 @@ func GetImageUrl(urlid string, token string, name string) {
 		file, _ := os.Create(filename)
 		defer file.Close()
 		req, _ := http.Get(url)
-		resp, _ := io.ReadAll(req.Body)
-		text := string(resp)
-		if strings.Contains(text, "MAX_IMAGE_DOWNLOADS") {
-			log.Println("max image limit downloaded -- skipping image download")
+		defer req.Body.Close()
+		io.Copy(file, req.Body)
+		info, _ := os.Stat(filename)
+		if info.Size() < 500 {
+			log.Println("Max image limit downloaded --skipping image download")
 			ImageError = true
 			return
 		}
-		req.Body.Close()
-		io.Copy(file, req.Body)
+
 	}
 	return
 }
@@ -624,15 +623,23 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 		for _, aspect := range aspects {
 
 			var maxWidth, maxHeight int
-
+			var finalCategory string = ""
 			for _, icon := range m.Data {
+				if finalCategory == "" && (icon.Category == "Poster Art" || icon.Category == "Box Art" || icon.Category == "Banner-L1" || icon.Category == "Banner-L2") {
+					finalCategory = icon.Category
+				} else if finalCategory == "" && icon.Category == "VOD Art" {
+					finalCategory = icon.Category
+				}
+				if icon.Category != finalCategory {
+					continue
+				}
 
 				if icon.URI[0:7] != "http://" && icon.URI[0:8] != "https://" {
 					nameTemp = icon.URI
 					icon.URI = fmt.Sprintf("https://json.schedulesdirect.org/20141201/image/%s", icon.URI)
 				}
 
-				if icon.Aspect == aspect && (icon.Category == "Poster Art" || icon.Category == "VOD Art" || icon.Category == "Banner-L1" || icon.Category == "Banner-L2") {
+				if icon.Aspect == aspect {
 
 					width, err = strconv.Atoi(icon.Width)
 					if err != nil {
