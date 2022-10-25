@@ -179,7 +179,7 @@ func (c *config) Open() (err error) {
 
 		Config.Options.TVShowImages = false
 
-		showInfo("G2G", fmt.Sprintf("%s (TVShows images) [%s]", getMsg(401), Config.File))
+		showInfo("G2G", fmt.Sprintf("%s (Local Images Cache) [%s]", getMsg(401), Config.File))
 
 	}
 
@@ -189,7 +189,7 @@ func (c *config) Open() (err error) {
 		newOptions = true
 
 		Config.Options.ImagesPath = "${images_path}"
-		showInfo("G2G", fmt.Sprintf("%s (TVShows images Path) [%s]", getMsg(402), Config.File))
+		showInfo("G2G", fmt.Sprintf("%s (TVShows images Path) [%s]", getMsg(403), Config.File))
 
 	}
 	// Proxy scheduledirect images url

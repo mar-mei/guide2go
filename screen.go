@@ -58,6 +58,9 @@ func getMsg(code int) (msg string) {
 
   case 402:
     msg = "Dowloaded Images Path"
+
+  case 403:
+    msg = "Local Images Cache"
   }
 
   return

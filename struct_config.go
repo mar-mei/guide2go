@@ -19,7 +19,7 @@ type config struct {
 		Schedule                int    `yaml:"Schedule Days"`
 		SubtitleIntoDescription bool   `yaml:"Subtitle into Description"`
 		Credits                 bool   `yaml:"Insert credits tag into XML file"`
-		TVShowImages            bool   `yaml:"TVShow Images"`
+		TVShowImages            bool   `yaml:"Local Images Cache"`
 		ImagesPath              string `yaml:"Images Path"`
 		ProxyImages             bool   `yaml:"Proxy Images"`
 
