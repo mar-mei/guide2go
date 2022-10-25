@@ -621,7 +621,6 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 		var path string
 		var nameTemp string
 		for _, aspect := range aspects {
-
 			var maxWidth, maxHeight int
 			var finalCategory string = ""
 			for _, icon := range m.Data {
@@ -666,9 +665,10 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 				if Config.Options.TVShowImages && !ImageError {
 					GetImageUrl(uri, Token, nameFinal)
 				}
-				ip := os.Getenv("IP_ADDRESS") + ":" + os.Getenv("PORT") + "/"
+				ip := os.Getenv("IP_ADDRESS") + ":" + os.Getenv("PORT") + "/images/"
 				path = "http://" + ip + nameFinal
 				i = append(i, Icon{Src: path, Height: maxHeight, Width: maxWidth})
+				break
 			}
 
 		}

@@ -1,292 +1,296 @@
 package main
 
 import (
-  "bytes"
-  "fmt"
-  "io/ioutil"
-  "os"
-  "path/filepath"
-  "strings"
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 
-  "gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v3"
 )
 
 // Configure : Configure config file
 func Configure(filename string) (err error) {
 
-  var menu Menu
-  var entry Entry
-  var sd SD
+	var menu Menu
+	var entry Entry
+	var sd SD
 
-  Config.File = strings.TrimSuffix(filename, filepath.Ext(filename))
+	Config.File = strings.TrimSuffix(filename, filepath.Ext(filename))
 
-  err = Config.Open()
-  if err != nil {
-    return
-  }
+	err = Config.Open()
+	if err != nil {
+		return
+	}
 
-  sd.Init()
+	sd.Init()
 
-  if len(Config.Account.Username) != 0 || len(Config.Account.Password) != 0 {
-    sd.Login()
-    sd.Status()
-  }
+	if len(Config.Account.Username) != 0 || len(Config.Account.Password) != 0 {
+		sd.Login()
+		sd.Status()
+	}
 
-  for {
+	for {
 
-    menu.Entry = make(map[int]Entry)
+		menu.Entry = make(map[int]Entry)
 
-    menu.Headline = fmt.Sprintf("%s [%s.yaml]", getMsg(0000), Config.File)
-    menu.Select = getMsg(0001)
+		menu.Headline = fmt.Sprintf("%s [%s.yaml]", getMsg(0000), Config.File)
+		menu.Select = getMsg(0001)
 
-    // Exit
-    entry.Key = 0
-    entry.Value = getMsg(0010)
-    menu.Entry[0] = entry
+		// Exit
+		entry.Key = 0
+		entry.Value = getMsg(0010)
+		menu.Entry[0] = entry
 
-    // Account
-    entry.Key = 1
-    entry.Value = getMsg(0011)
-    menu.Entry[1] = entry
-    if len(Config.Account.Username) == 0 || len(Config.Account.Password) == 0 {
-      entry.account()
-      err = sd.Login()
-      if err != nil {
-        os.RemoveAll(Config.File + ".yaml")
-        os.Exit(0)
-      }
-      sd.Status()
+		// Account
+		entry.Key = 1
+		entry.Value = getMsg(0011)
+		menu.Entry[1] = entry
+		if len(Config.Account.Username) == 0 || len(Config.Account.Password) == 0 {
+			entry.account()
+			err = sd.Login()
+			if err != nil {
+				os.RemoveAll(Config.File + ".yaml")
+				os.Exit(0)
+			}
+			sd.Status()
 
-    }
+		}
 
-    // Add Lineup
-    entry.Key = 2
-    entry.Value = getMsg(0012)
-    menu.Entry[2] = entry
+		// Add Lineup
+		entry.Key = 2
+		entry.Value = getMsg(0012)
+		menu.Entry[2] = entry
 
-    // Remove Lineup
-    entry.Key = 3
-    entry.Value = getMsg(0013)
-    menu.Entry[3] = entry
+		// Remove Lineup
+		entry.Key = 3
+		entry.Value = getMsg(0013)
+		menu.Entry[3] = entry
 
-    // Manage Channels
-    entry.Key = 4
-    entry.Value = getMsg(0014)
-    menu.Entry[4] = entry
+		// Manage Channels
+		entry.Key = 4
+		entry.Value = getMsg(0014)
+		menu.Entry[4] = entry
 
-    // Create XMLTV file
-    entry.Key = 5
-    entry.Value = fmt.Sprintf("%s [%s]", getMsg(0016), Config.Files.XMLTV)
-    menu.Entry[5] = entry
+		// Create XMLTV file
+		entry.Key = 5
+		entry.Value = fmt.Sprintf("%s [%s]", getMsg(0016), Config.Files.XMLTV)
+		menu.Entry[5] = entry
 
-    var selection = menu.Show()
+		var selection = menu.Show()
 
-    entry = menu.Entry[selection]
+		entry = menu.Entry[selection]
 
-    switch selection {
+		switch selection {
 
-    case 0:
-      Config.Save()
-      os.Exit(0)
+		case 0:
+			Config.Save()
+			os.Exit(0)
 
-    case 1:
-      entry.account()
-      sd.Login()
-      sd.Status()
-      break
+		case 1:
+			entry.account()
+			sd.Login()
+			sd.Status()
+			break
 
-    case 2:
-      entry.addLineup(&sd)
-      sd.Status()
-      break
+		case 2:
+			entry.addLineup(&sd)
+			sd.Status()
+			break
 
-    case 3:
-      entry.removeLineup(&sd)
-      sd.Status()
-      break
+		case 3:
+			entry.removeLineup(&sd)
+			sd.Status()
+			break
 
-    case 4:
-      entry.manageChannels(&sd)
-      sd.Status()
-      break
+		case 4:
+			entry.manageChannels(&sd)
+			sd.Status()
+			break
 
-    case 5:
-      sd.Update(filename)
-      break
+		case 5:
+			sd.Update(filename)
+			break
 
-    }
+		}
 
-  }
+	}
 
-  return
+	return
 }
 
 func (c *config) Open() (err error) {
 
-  data, err := ioutil.ReadFile(fmt.Sprintf("%s.yaml", c.File))
-  var rmCacheFile, newOptions bool
+	data, err := ioutil.ReadFile(fmt.Sprintf("%s.yaml", c.File))
+	var rmCacheFile, newOptions bool
 
-  if err != nil {
-    // File is missing, create new config file (YAML)
-    c.InitConfig()
-    err = c.Save()
-    if err != nil {
-      return
-    }
+	if err != nil {
+		// File is missing, create new config file (YAML)
+		c.InitConfig()
+		err = c.Save()
+		if err != nil {
+			return
+		}
 
-    return nil
-  }
+		return nil
+	}
 
-  // Open config file and convert Yaml to Struct (config)
-  err = yaml.Unmarshal(data, &c)
-  if err != nil {
-    return
-  }
+	// Open config file and convert Yaml to Struct (config)
+	err = yaml.Unmarshal(data, &c)
+	if err != nil {
+		return
+	}
 
-  /*
-     New config options
-  */
+	/*
+	   New config options
+	*/
 
-  // Credits tag
-  if !bytes.Contains(data, []byte("credits tag")) {
+	// Credits tag
+	if !bytes.Contains(data, []byte("credits tag")) {
 
-    rmCacheFile = true
-    newOptions = true
+		rmCacheFile = true
+		newOptions = true
 
-    Config.Options.Credits = true
+		Config.Options.Credits = true
 
-    showInfo("G2G", fmt.Sprintf("%s (credits) [%s]", getMsg(0300), Config.File))
+		showInfo("G2G", fmt.Sprintf("%s (credits) [%s]", getMsg(0300), Config.File))
 
-  }
+	}
 
-  // Rating tag
-  if !bytes.Contains(data, []byte("Rating:")) {
+	// Rating tag
+	if !bytes.Contains(data, []byte("Rating:")) {
 
-    newOptions = true
+		newOptions = true
 
-    Config.Options.Rating.Guidelines = true
-    Config.Options.Rating.Countries = []string{}
-    Config.Options.Rating.CountryCodeAsSystem = false
-    Config.Options.Rating.MaxEntries = 1
+		Config.Options.Rating.Guidelines = true
+		Config.Options.Rating.Countries = []string{}
+		Config.Options.Rating.CountryCodeAsSystem = false
+		Config.Options.Rating.MaxEntries = 1
 
-    showInfo("G2G", fmt.Sprintf("%s (rating) [%s]", getMsg(0300), Config.File))
+		showInfo("G2G", fmt.Sprintf("%s (rating) [%s]", getMsg(0300), Config.File))
 
-  }
-  // Download Images from TV Shows
-  if !bytes.Contains(data, []byte("TVShow Images:")) {
+	}
+	// Download Images from TV Shows
+	if !bytes.Contains(data, []byte("Local Images Cache:")) {
 
-    newOptions = true
+		newOptions = true
 
-    Config.Options.TVShowImages = false
+		Config.Options.TVShowImages = false
 
-    showInfo("G2G", fmt.Sprintf("%s (TVShows images) [%s]", getMsg(401), Config.File))
+		showInfo("G2G", fmt.Sprintf("%s (TVShows images) [%s]", getMsg(401), Config.File))
 
-  }
+	}
 
-  // Download Images from TV Shows
-  if !bytes.Contains(data, []byte("Images Path:")) {
+	// Download Images from TV Shows
+	if !bytes.Contains(data, []byte("Images Path:")) {
 
-    newOptions = true
+		newOptions = true
 
-    Config.Options.ImagesPath = "${images_path}"
+		Config.Options.ImagesPath = "${images_path}"
+		showInfo("G2G", fmt.Sprintf("%s (TVShows images Path) [%s]", getMsg(402), Config.File))
 
-    showInfo("G2G", fmt.Sprintf("%s (TVShows images Path) [%s]", getMsg(402), Config.File))
+	}
+	// Proxy scheduledirect images url
+	if !bytes.Contains(data, []byte("Proxy Images")) {
+		newOptions = true
+		Config.Options.ProxyImages = false
+	}
+	// SD errors
+	if !bytes.Contains(data, []byte("download errors")) {
 
-  }
+		newOptions = true
+		Config.Options.SDDownloadErrors = false
 
-  // SD errors
-  if !bytes.Contains(data, []byte("download errors")) {
+		showInfo("G2G", fmt.Sprintf("%s (SD errors) [%s]", getMsg(0300), Config.File))
 
-    newOptions = true
-    Config.Options.SDDownloadErrors = false
+	}
 
-    showInfo("G2G", fmt.Sprintf("%s (SD errors) [%s]", getMsg(0300), Config.File))
+	if newOptions == true {
 
-  }
+		err = c.Save()
+		if err != nil {
+			return
+		}
 
-  if newOptions == true {
+	}
 
-    err = c.Save()
-    if err != nil {
-      return
-    }
+	if rmCacheFile == true {
+		Cache.Remove()
+	}
 
-  }
-
-  if rmCacheFile == true {
-    Cache.Remove()
-  }
-
-  return
+	return
 }
 
 func (c *config) Save() (err error) {
 
-  data, err := yaml.Marshal(&c)
-  if err != nil {
-    return err
-  }
+	data, err := yaml.Marshal(&c)
+	if err != nil {
+		return err
+	}
 
-  err = ioutil.WriteFile(fmt.Sprintf("%s.yaml", c.File), data, 0644)
-  if err != nil {
-    return
-  }
+	err = ioutil.WriteFile(fmt.Sprintf("%s.yaml", c.File), data, 0644)
+	if err != nil {
+		return
+	}
 
-  return
+	return
 }
 
 func (c *config) InitConfig() {
 
-  // Files
-  c.Files.Cache = fmt.Sprintf("%s_cache.json", c.File)
-  c.Files.XMLTV = fmt.Sprintf("%s.xml", c.File)
+	// Files
+	c.Files.Cache = fmt.Sprintf("%s_cache.json", c.File)
+	c.Files.XMLTV = fmt.Sprintf("%s.xml", c.File)
 
-  // Options
-  c.Options.PosterAspect = "all"
-  c.Options.TVShowImages = false
-  c.Options.Schedule = 7
-  c.Options.SubtitleIntoDescription = false
-  c.Options.Credits = false
-  c.Options.ImagesPath = "/data/images/"
-  Config.Options.Rating.Guidelines = true
-  Config.Options.Rating.Countries = []string{"USA", "CHE", "DE"}
-  Config.Options.Rating.CountryCodeAsSystem = false
-  Config.Options.Rating.MaxEntries = 1
+	// Options
+	c.Options.PosterAspect = "all"
+	c.Options.TVShowImages = false
+	c.Options.Schedule = 7
+	c.Options.SubtitleIntoDescription = false
+	c.Options.Credits = false
+	c.Options.ImagesPath = "/data/images/"
+	c.Options.ProxyImages = false
+	Config.Options.Rating.Guidelines = true
+	Config.Options.Rating.Countries = []string{"USA", "CHE", "DE"}
+	Config.Options.Rating.CountryCodeAsSystem = false
+	Config.Options.Rating.MaxEntries = 1
 
-  return
+	return
 }
 
 func (c *config) GetChannelList(lineup string) (list []string) {
 
-  for _, channel := range c.Station {
+	for _, channel := range c.Station {
 
-    switch len(lineup) {
+		switch len(lineup) {
 
-    case 0:
-      list = append(list, channel.ID)
+		case 0:
+			list = append(list, channel.ID)
 
-    default:
-      if lineup == channel.Lineup {
-        list = append(list, channel.ID)
-      }
+		default:
+			if lineup == channel.Lineup {
+				list = append(list, channel.ID)
+			}
 
-    }
+		}
 
-  }
+	}
 
-  return
+	return
 }
 
 func (c *config) GetLineupCountry(id string) (countryCode string) {
 
-  for _, channel := range c.Station {
+	for _, channel := range c.Station {
 
-    if id == channel.ID {
-      countryCode = strings.Split(channel.Lineup, "-")[0]
-      return
-    }
+		if id == channel.ID {
+			countryCode = strings.Split(channel.Lineup, "-")[0]
+			return
+		}
 
-  }
+	}
 
-  return
+	return
 }

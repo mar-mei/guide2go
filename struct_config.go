@@ -21,6 +21,7 @@ type config struct {
 		Credits                 bool   `yaml:"Insert credits tag into XML file"`
 		TVShowImages            bool   `yaml:"TVShow Images"`
 		ImagesPath              string `yaml:"Images Path"`
+		ProxyImages             bool   `yaml:"Proxy Images"`
 
 		Rating struct {
 			Guidelines          bool     `yaml:"Insert rating tag into XML file"`
