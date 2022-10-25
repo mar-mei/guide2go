@@ -2,10 +2,10 @@
 I implemented changes that were missing in the current Guide2Go version.
 
 **Recent changes:**
-1. Grab images from Schedules Direct in a local folder. This script will download show images and save them in a folder. Then it will expose those images using Nginx. This is useful for players like Emby. Emby will use the url to grab the images for the EPG.
-1. For players like tiviMate I added the "live" and "new" icon in the tittle of the programm. This is usually auto added in Emby or other IPTV players, but TiviMate does not do this.
+1. Grab images from Schedules Direct in a local folder. This script will download tvshow/movie images and save them in a local folder. Then it will expose the images from a go server. This is useful for players like Emby or Plex.
+1. For players like tiviMate I added the "live" and "new" icon in the tittle of the program. This is usually auto-added in Emby or other IPTV players, but TiviMate does not do this by reading XML tags.
+1. Added the option to proxy the images instead of downloading them locally. It will pass the guide2go server IP and the server will act as a reverse-proxy to Schedules Direct to grab the image. (only usefully for small EPG files).
 
-Thats basically it for now.
 
 ## Guide2Go
 Guide2Go is written in Go and creates an XMLTV file from the Schedules Direct JSON API.  
@@ -26,7 +26,9 @@ Guide2Go is written in Go and creates an XMLTV file from the Schedules Direct JS
 - [Go](https://golang.org/ "Golang") to build the binary
 - Computer with 1-2 GB memory
 
-## Build binary 
+
+## Installation
+### Build binary
 The following command must be executed with the terminal / command prompt inside the source code folder.  
 Linux, Unix, OSX:
 ```
@@ -37,9 +39,49 @@ Windows:
 ```
 go build -o guide2go.exe
 ```
-Switch -o creates the binary *guide2go* in the current folder.  
+### Docker
+Download the docker image:
 
-## Instructions
+#### Docker environment variables
+
+- IP_ADDRESS="192.168.200.111" Set the ip address of the server. 
+- IMAGES_PATH="/data/images" The path were the server will cache the images
+- PORT="8080" Port used for the server
+
+#### Volumes
+
+- /data/images  --  Path where images will be cached. It has to be the same that was declared in the Environment variables
+- /data/livetv -- optional --  If you want to save the files in a directory that other applications will have access to. (shared folder)
+
+**Stable:**
+
+`docker pull chuchodavids/guide2go:stable`
+
+**Development:**
+
+`docker pull chuchodavids/guide2go:development`
+
+**docker-compose**
+```
+version: "3.4"
+services:
+    guide2go:
+      container_name: guide2go
+      image: chuchodavids/guide2go:stable
+      ports:
+        - 8080:8080
+      environment:
+        - IP_ADDRESS=192.168.200.146
+        - IMAGES_PATH=/data/images
+        - PORT=8080
+      volumes:
+        - /data/livetv/:/data/livetv/
+        - /data/images:/data/images/
+      restart: always
+```
+
+Switch -o creates the binary *guide2go* in the current folder.
+
 
 ### Show CLI parameter:  
 ```guide2go -h```
@@ -123,6 +165,9 @@ Options:
     Schedule Days: 7
     Subtitle into Description: false
     Insert credits tag into XML file: true
+    Local Images Cache: true
+    Images Path: /Users/jesusdavid/Documents/images/
+    Proxy Images: false
     Rating:
         Insert rating tag into XML file: true
         Maximum rating entries. 0 for all entries: 1
@@ -139,16 +184,15 @@ Station:
   - Name: Fox Sports 2 HD
     ID: "59305"
     Lineup: USA-DITV-DEFAULT
-  ...
 ```
 
 **- Account: (Don't change)**  
 Schedules Direct Account data, do not change them in the configuration file.  
 
-**- Flies: (Can be customized)**  
+**- Flies: (Can be customized)**
 ```yaml
-Cache: /Path/to/cach/file.json  
-XMLTV: /Path/to/XMLTV/file.xml  
+Cache: /data/livetv/file.json  
+XMLTV: /data/livetv/file.xml  
 ```
 
 **- Options: (Can be customized)**  
@@ -192,6 +236,31 @@ Alan zieht aus, da seine Freundin Kandi und er in Las Vegas eine Million Dollar 
    ...
 </programme>
 ```
+
+---
+```yaml
+Local Images Cache: false
+```
+**true**: Download the images from SD in a local folder. This option atuomatically enables the server so clients can access to the images.
+**false**: images are not downloaded locally
+
+---
+
+```yaml
+Images Path: /data/images
+```
+
+Path to cache images locally. Only useful if Local Images Cache = true
+
+---
+
+```yaml
+Proxy Images: false
+```
+
+**True**: (Overrides local image cache option) Instead of downloading the images locally, it will act as a reverse proxy between the clients and guide2go server.
+This is only usefull when there are not too many clients on your network, not too many channels on your EPG and you are not downloading more than 1-3 days of EPG data.
+It is very usefull if you dont want to bother setting up a cache folder for your EPG images.
 
 ---
 
