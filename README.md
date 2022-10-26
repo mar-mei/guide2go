@@ -42,12 +42,6 @@ go build -o guide2go.exe
 ### Docker
 Download the docker image:
 
-#### Docker environment variables
-
-- IP_ADDRESS="192.168.200.111" Set the ip address of the server. 
-- IMAGES_PATH="/data/images" The path were the server will cache the images
-- PORT="8080" Port used for the server
-
 #### Volumes
 
 - /data/images  --  Path where images will be cached. It has to be the same that was declared in the Environment variables
@@ -71,9 +65,7 @@ services:
       ports:
         - 8080:8080
       environment:
-        - IP_ADDRESS=192.168.200.146
-        - IMAGES_PATH=/data/images
-        - PORT=8080
+        - TZ: America/Chicago
       volumes:
         - /data/livetv/:/data/livetv/
         - /data/images:/data/images/
@@ -168,6 +160,7 @@ Options:
     Local Images Cache: true
     Images Path: /Users/jesusdavid/Documents/images/
     Proxy Images: false
+    Hostname: localhost:8080
     Rating:
         Insert rating tag into XML file: true
         Maximum rating entries. 0 for all entries: 1
@@ -244,6 +237,12 @@ Local Images Cache: false
 **true**: Download the images from SD in a local folder. This option atuomatically enables the server so clients can access to the images.
 **false**: images are not downloaded locally
 
+---
+
+```yaml
+Hostname: localhost:8080
+```
+**Hostname:** hostname + port of the local server for the images 
 ---
 
 ```yaml
