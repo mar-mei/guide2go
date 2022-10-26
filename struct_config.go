@@ -22,6 +22,7 @@ type config struct {
 		TVShowImages            bool   `yaml:"Local Images Cache"`
 		ImagesPath              string `yaml:"Images Path"`
 		ProxyImages             bool   `yaml:"Proxy Images"`
+		Hostname                string   `yaml:"Hostname"`
 
 		Rating struct {
 			Guidelines          bool     `yaml:"Insert rating tag into XML file"`

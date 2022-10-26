@@ -197,6 +197,13 @@ func (c *config) Open() (err error) {
 		newOptions = true
 		Config.Options.ProxyImages = false
 	}
+
+	// Hostname
+	if !bytes.Contains(data, []byte("Hostname")) {
+		newOptions = true
+		Config.Options.Hostname = "localhost:8080"
+	}
+
 	// SD errors
 	if !bytes.Contains(data, []byte("download errors")) {
 

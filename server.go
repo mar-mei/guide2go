@@ -4,16 +4,14 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"os"
 )
 
 func Server() {
-	port := os.Getenv("PORT")
 	serverImagesPath := Config.Options.ImagesPath
 	fs := http.FileServer(http.Dir(serverImagesPath))
-	addr := ":" + port
+	addr := Config.Options.Hostname
 
-	log.Printf("Listening on: %s", port)
+	log.Printf("Listening on: %s", addr)
 	log.Printf("Using %s folder as image path", serverImagesPath)
 
 	r := mux.NewRouter()
