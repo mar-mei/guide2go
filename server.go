@@ -1,15 +1,24 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 func Server() {
+	port := strings.Split(Config.Options.Hostname, ":")
+	var addr string
 	serverImagesPath := Config.Options.ImagesPath
 	fs := http.FileServer(http.Dir(serverImagesPath))
-	addr := Config.Options.Hostname
+	if len(port) == 2 {
+		addr = ":" + port[1]
+	} else {
+		log.Println("No port found, using port 8080")
+		addr = ":8080"
+	}
 
 	log.Printf("Listening on: %s", addr)
 	log.Printf("Using %s folder as image path", serverImagesPath)
