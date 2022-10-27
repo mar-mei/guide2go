@@ -1,6 +1,8 @@
 # Release Notes
 
-## 2.0
+
+## 26-10-2022
+- Added API endpoint to run the EPG grabber
 - Server for images
 - Added images from local server to the XMLTV file
 - Added Livetv/New icon to the title of shows/movies in the XMLTV file
