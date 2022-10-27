@@ -265,20 +265,15 @@ func (c *cache) GetRequiredProgramIDs() (programIDs []string) {
 
 func (c *cache) GetRequiredMetaIDs() (metaIDs []string) {
 
-	for id, p := range c.Program {
+	for id, _ := range c.Program {
 
-		if p.HasImageArtwork == true {
+		if len(id) > 10 {
 
-			if len(id) > 10 {
-
-				if _, ok := c.Metadata[id[:10]]; !ok {
-					metaIDs = append(metaIDs, id[:10])
-				}
-
+			if _, ok := c.Metadata[id[:10]]; !ok {
+				metaIDs = append(metaIDs, id[:10])
 			}
 
 		}
-
 	}
 
 	return
@@ -666,7 +661,6 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 				}
 				path := "http://" + Config.Options.Hostname + "/images/" + nameFinal
 				i = append(i, Icon{Src: path, Height: maxHeight, Width: maxWidth})
-				break
 			}
 
 		}
