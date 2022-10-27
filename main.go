@@ -15,6 +15,7 @@ const Version = "1.1.3"
 
 // Config : Config file (struct)
 var Config config
+var Config2 string
 
 func main() {
 
@@ -23,8 +24,8 @@ func main() {
 
 	var h = flag.Bool("h", false, ": Show help")
 
-	var imageServer = flag.Bool("server", false, "= Starts server for images")
 	flag.Parse()
+	Config2 = *config
 	showInfo("G2G", fmt.Sprintf("Version: %s", Version))
 
 	if *h {
@@ -52,10 +53,6 @@ func main() {
 			os.Exit(0)
 		}
 
-	}
-	if *imageServer {
-		Server()
-		os.Exit(0)
 	}
 }
 

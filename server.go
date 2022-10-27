@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -30,6 +31,7 @@ func Server() {
 	} else if Config.Options.TVShowImages {
 		r.PathPrefix("/images/").Handler(http.StripPrefix("/images/", fs))
 	}
+	r.HandleFunc("/run", run)
 
 	err := http.ListenAndServe(addr, r)
 	if err != nil {
@@ -43,4 +45,10 @@ func proxyImages(w http.ResponseWriter, r *http.Request) {
 	a, _ := http.NewRequest("GET", url, nil)
 	http.Redirect(w, a, url, http.StatusSeeOther)
 	log.Println("requested image: " + r.RequestURI)
+}
+
+func run(w http.ResponseWriter, r *http.Request) {
+	var sd SD
+	go sd.Update(Config2)
+	fmt.Fprint(w, "Grabbing EPG")
 }
