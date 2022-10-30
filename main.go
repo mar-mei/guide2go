@@ -18,7 +18,7 @@ var Config config
 var Config2 string
 
 func main() {
-
+	log.SetOutput(os.Stdout)
 	var configure = flag.String("configure", "", "= Create or modify the configuration file. [filename.yaml]")
 	var config = flag.String("config", "", "= Get data from Schedules Direct with configuration file. [filename.yaml]")
 

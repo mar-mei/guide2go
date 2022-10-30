@@ -1,11 +1,12 @@
 package main
 
 import (
-  "errors"
-  "fmt"
-  "log"
-  "sort"
-  "strconv"
+	"errors"
+	"fmt"
+	"log"
+	"os"
+	"sort"
+	"strconv"
 )
 
 func getMsg(code int) (msg string) {
@@ -69,6 +70,7 @@ func getMsg(code int) (msg string) {
 // Show : Show menu on screen
 func (m *Menu) Show() (selection int) {
 
+  log.SetOutput(os.Stdout)
   if len(m.Entry) == 0 {
     return
   }
@@ -144,7 +146,7 @@ func (m *Menu) Show() (selection int) {
 
 // ShowInfo : Show info on screen
 func showInfo(key, msg string) {
-
+  log.SetOutput(os.Stdout)
   switch len(key) {
 
   case 1:

@@ -5,11 +5,13 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"os"
 
 	"github.com/gorilla/mux"
 )
 
 func Server() {
+	log.SetOutput(os.Stdout)
 	port := strings.Split(Config.Options.Hostname, ":")
 	var addr string
 	serverImagesPath := Config.Options.ImagesPath
