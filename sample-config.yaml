@@ -1,0 +1,27 @@
+Account:
+    Username: 
+    Password: 
+Files:
+    Cache: /config/cache.json
+    XMLTV: /config/xml.xml
+Options:
+    Poster Aspect: 3x4
+    Schedule Days: 1
+    Subtitle into Description: false
+    Insert credits tag into XML file: false
+    Local Images Cache: true
+    Images Path: /data/images
+    Proxy Images: false
+    Hostname: localhost:9090
+    Rating:
+        Insert rating tag into XML file: true
+        Maximum rating entries. 0 for all entries: 1
+        Preferred countries. ISO 3166-1 alpha-3 country code. Leave empty for all systems:
+          - USA
+        Use country code as rating system: false
+    Show download errors from Schedules Direct in the log: true
+Station:
+  - Name: HBO
+    ID: "19548"
+    Lineup: USA-IL67050-X
+# Keep adding channels as needed

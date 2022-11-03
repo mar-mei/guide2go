@@ -6,6 +6,6 @@ guide2go.sublime-workspace
 guide2go.code-workspace
 dev
 *.xml
-*.yaml
+a.yaml
 *.json
 *.iml
