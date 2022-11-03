@@ -67,6 +67,7 @@ services:
       environment:
         - TZ: America/Chicago
       volumes:
+        - /data/config/guide2go:/config
         - /data/livetv/:/data/livetv/
         - /data/images:/data/images/
       restart: always
@@ -87,6 +88,8 @@ Switch -o creates the binary *guide2go* in the current folder.
 ```
 
 ### Create a config file:
+
+**note: You can use the sample config file that is in the /config folder inside of the docker container**
 
 ```guide2go -configure MY_CONFIG_FILE.yaml```  
 If the configuration file does not exist, a YAML configuration file is created. 
@@ -158,7 +161,7 @@ Options:
     Subtitle into Description: false
     Insert credits tag into XML file: true
     Local Images Cache: true
-    Images Path: /Users/jesusdavid/Documents/images/
+    Images Path: /data/images/
     Proxy Images: false
     Hostname: localhost:8080
     Rating:
