@@ -170,7 +170,7 @@ func (sd *SD) Connect() (err error) {
     return
   }
 
-  if sd.Req.Compression == true {
+  if sd.Req.Compression {
     req.Header.Set("Accept-Encoding", "deflate,gzip")
   }
 

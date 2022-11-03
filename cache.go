@@ -169,7 +169,6 @@ func (c *cache) AddProgram(gzip *[]byte, wg *sync.WaitGroup) {
 
 	}
 
-	return
 }
 
 func (c *cache) AddMetadata(gzip *[]byte, wg *sync.WaitGroup) {
@@ -208,7 +207,7 @@ func (c *cache) AddMetadata(gzip *[]byte, wg *sync.WaitGroup) {
 			err = json.Unmarshal(jsonByte, &sdError)
 			if err == nil {
 
-				if Config.Options.SDDownloadErrors == true {
+				if Config.Options.SDDownloadErrors {
 					err = fmt.Errorf("%s [SD API Error Code: %d] Program ID: %s", sdError.Data.Message, sdError.Data.Code, sdError.ProgramID)
 					ShowErr(err)
 				}
@@ -223,8 +222,6 @@ func (c *cache) AddMetadata(gzip *[]byte, wg *sync.WaitGroup) {
 		}
 
 	}
-
-	return
 }
 
 func (c *cache) GetAllProgramIDs() (programIDs []string) {
@@ -265,7 +262,7 @@ func (c *cache) GetRequiredProgramIDs() (programIDs []string) {
 
 func (c *cache) GetRequiredMetaIDs() (metaIDs []string) {
 
-	for id, _ := range c.Program {
+	for id := range c.Program {
 
 		if len(id) > 10 {
 
@@ -433,7 +430,7 @@ func (c *cache) GetDescs(id, subTitle string) (de []Desc) {
 
 func (c *cache) GetCredits(id string) (cr Credits) {
 
-	if Config.Options.Credits == true {
+	if Config.Options.Credits {
 
 		if p, ok := c.Program[id]; ok {
 
@@ -592,7 +589,6 @@ func GetImageUrl(urlid string, token string, name string) {
 		}
 
 	}
-	return
 }
 
 func (c *cache) GetIcon(id string) (i []Icon) {
@@ -672,7 +668,7 @@ func (c *cache) GetIcon(id string) (i []Icon) {
 
 func (c *cache) GetRating(id, countryCode string) (ra []Rating) {
 
-	if Config.Options.Rating.Guidelines == false {
+	if !Config.Options.Rating.Guidelines {
 		return
 	}
 

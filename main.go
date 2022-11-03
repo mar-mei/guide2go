@@ -48,7 +48,7 @@ func main() {
 		if err != nil {
 			ShowErr(err)
 		}
-		if Config.Options.TVShowImages == true || Config.Options.ProxyImages == true {
+		if Config.Options.TVShowImages || Config.Options.ProxyImages {
 			Server()
 			os.Exit(0)
 		}

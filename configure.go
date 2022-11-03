@@ -93,32 +93,26 @@ func Configure(filename string) (err error) {
 			entry.account()
 			sd.Login()
 			sd.Status()
-			break
 
 		case 2:
 			entry.addLineup(&sd)
 			sd.Status()
-			break
 
 		case 3:
 			entry.removeLineup(&sd)
 			sd.Status()
-			break
 
 		case 4:
 			entry.manageChannels(&sd)
 			sd.Status()
-			break
 
 		case 5:
 			sd.Update(filename)
-			break
 
 		}
 
 	}
 
-	return
 }
 
 func (c *config) Open() (err error) {
@@ -214,7 +208,7 @@ func (c *config) Open() (err error) {
 
 	}
 
-	if newOptions == true {
+	if newOptions {
 
 		err = c.Save()
 		if err != nil {
@@ -223,7 +217,7 @@ func (c *config) Open() (err error) {
 
 	}
 
-	if rmCacheFile == true {
+	if rmCacheFile {
 		Cache.Remove()
 	}
 
@@ -264,7 +258,6 @@ func (c *config) InitConfig() {
 	Config.Options.Rating.CountryCodeAsSystem = false
 	Config.Options.Rating.MaxEntries = 1
 
-	return
 }
 
 func (c *config) GetChannelList(lineup string) (list []string) {
