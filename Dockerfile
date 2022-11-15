@@ -14,4 +14,4 @@ COPY sample-config.yaml /config/sample-config.yaml
 
 RUN apt-get update && apt-get install ca-certificates -y && apt autoclean
 
-ENTRYPOINT ["guide2go"]
+CMD [ "guide2go", "--config", "/config/sample-config.yaml" ]
