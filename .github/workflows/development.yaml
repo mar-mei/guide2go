@@ -7,7 +7,6 @@ on:
 
 jobs:
   image-build-push-prod:
-    needs: go-build
     runs-on: self-hosted
     steps:
       - name: Build the Docker image
