@@ -6,12 +6,6 @@ on:
       - development
 
 jobs:
-  go-build:
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v3
-      - name: go build
-        run: go build -o guide2go
   image-build-push-prod:
     needs: go-build
     runs-on: self-hosted

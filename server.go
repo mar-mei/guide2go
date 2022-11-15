@@ -12,7 +12,6 @@ import (
 
 func Server() {
 	log.SetOutput(os.Stdout)
-	log.Println("test")
 	port := strings.Split(Config.Options.Hostname, ":")
 	var addr string
 	serverImagesPath := Config.Options.ImagesPath
