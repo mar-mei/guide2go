@@ -12,6 +12,9 @@ FROM debian:10-slim
 COPY --from=builder /app/guide2go /usr/local/bin/guide2go
 COPY sample-config.yaml /config/sample-config.yaml
 
-RUN apt-get update && apt-get install ca-certificates -y && apt autoclean
+RUN apt-get update && apt-get --no-install-recommends -y \
+install ca-certificates \
+&& apt autoclean \
+&& rm -rf /var/lib/apt/lists/*
 
 CMD [ "guide2go", "--config", "/config/sample-config.yaml" ]
