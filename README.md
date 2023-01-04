@@ -1,7 +1,4 @@
-# This is a Fork of the abandoned (?) Guide2Go project
-I implemented changes that were missing in the current Guide2Go version.
-
-**Recent changes:**
+**Recent changes by [Chuchodavids](https://github.com/mar-mei/guide2go/issues?q=is%3Apr+author%3AChuchodavids):**
 1. Grab images from Schedules Direct in a local folder. This script will download tvshow/movie images and save them in a local folder. Then it will expose the images from a go server. This is useful for players like Emby or Plex.
 1. For players like tiviMate I added the "live" and "new" icon in the tittle of the program. This is usually auto-added in Emby or other IPTV players, but TiviMate does not do this by reading XML tags.
 1. Added the option to proxy the images instead of downloading them locally. It will pass the guide2go server IP and the server will act as a reverse-proxy to Schedules Direct to grab the image. (only usefully for small EPG files).
