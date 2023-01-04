@@ -1,11 +1,12 @@
 package main
 
 import (
-  "errors"
-  "fmt"
-  "log"
-  "sort"
-  "strconv"
+	"errors"
+	"fmt"
+	"log"
+	"os"
+	"sort"
+	"strconv"
 )
 
 func getMsg(code int) (msg string) {
@@ -53,6 +54,14 @@ func getMsg(code int) (msg string) {
   case 0301:
     msg = "Remove Cache File"
 
+  case 401:
+    msg = "Download images"
+
+  case 402:
+    msg = "Dowloaded Images Path"
+
+  case 403:
+    msg = "Local Images Cache"
   }
 
   return
@@ -61,6 +70,7 @@ func getMsg(code int) (msg string) {
 // Show : Show menu on screen
 func (m *Menu) Show() (selection int) {
 
+  log.SetOutput(os.Stdout)
   if len(m.Entry) == 0 {
     return
   }
@@ -136,7 +146,7 @@ func (m *Menu) Show() (selection int) {
 
 // ShowInfo : Show info on screen
 func showInfo(key, msg string) {
-
+  log.SetOutput(os.Stdout)
   switch len(key) {
 
   case 1:

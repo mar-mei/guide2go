@@ -1,0 +1,17 @@
+name: Development workflow
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  image-build-push-prod:
+    runs-on: self-hosted
+    steps:
+      - name: Build the Docker image
+        run: |
+          new_tag=$(date +%s)
+          docker build . --file Dockerfile --tag chuchodavids/guide2go:"$new_tag" --tag chuchodavids/guide2go:development
+          docker push chuchodavids/guide2go:"$new_tag"
+          docker push chuchodavids/guide2go:development

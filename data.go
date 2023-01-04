@@ -87,7 +87,7 @@ func (sd *SD) GetData() {
     sd.Req.Parameter = fmt.Sprintf("/%s", id)
     sd.Req.Type = "GET"
 
-    err = sd.Lineups()
+    sd.Lineups()
 
     Cache.AddStations(&sd.Resp.Body, id)
 
@@ -214,6 +214,4 @@ func (sd *SD) GetData() {
     ShowErr(err)
     return
   }
-
-  return
 }

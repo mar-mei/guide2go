@@ -4,10 +4,8 @@ import (
   "bytes"
   "compress/gzip"
   "crypto/sha1"
-  "encoding/json"
   "fmt"
   "io"
-  "io/ioutil"
   "strings"
 )
 
@@ -50,23 +48,5 @@ func gUnzip(data []byte) (res []byte, err error) {
 
   res = resB.Bytes()
 
-  return
-}
-func writeByteToFile(filename string, data []byte) error {
-
-  var err = ioutil.WriteFile(filename, data, 0644)
-
-  return err
-}
-
-func mapToJson(tmpMap interface{}) (jsonString string) {
-
-  jsonString = "{}"
-  jsonByte, err := json.MarshalIndent(tmpMap, "", "  ")
-  if err != nil {
-    return
-  }
-
-  jsonString = string(jsonByte)
   return
 }

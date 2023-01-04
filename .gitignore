@@ -5,3 +5,7 @@ guide2go.sublime-project
 guide2go.sublime-workspace
 guide2go.code-workspace
 dev
+*.xml
+a.yaml
+*.json
+*.iml

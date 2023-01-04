@@ -14,7 +14,6 @@ func (e *Entry) headline() {
   }
   fmt.Println()
 
-  return
 }
 
 func (e *Entry) account() {
