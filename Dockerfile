@@ -17,4 +17,4 @@ install ca-certificates \
 && apt autoclean \
 && rm -rf /var/lib/apt/lists/*
 
-CMD [ "guide2go", "--config", "/config/sample-config.yaml" ]
+CMD [ "guide2go", "--config", "/config/config.yaml" ]
