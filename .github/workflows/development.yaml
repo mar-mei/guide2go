@@ -13,6 +13,6 @@ jobs:
         working-directory: ./${{ env.GITHUB_WORKSPACE }}
         run: |
           new_tag=$(date +%s)
-          docker build --file guide2go/Dockerfile --tag chuchodavids/guide2go:"$new_tag" --tag chuchodavids/guide2go:development
+          docker build guide2go --tag chuchodavids/guide2go:"$new_tag" --tag chuchodavids/guide2go:development
           docker push chuchodavids/guide2go:"$new_tag"
           docker push chuchodavids/guide2go:development
