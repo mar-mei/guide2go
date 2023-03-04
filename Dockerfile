@@ -8,13 +8,14 @@ RUN go get
 RUN go build -o guide2go
 
 FROM debian:10-slim
-
-COPY --from=builder /app/guide2go /usr/local/bin/guide2go
-COPY sample-config.yaml /config/sample-config.yaml
+RUN useradd -ms /bin/bash guide2go
+COPY --from=builder --chown=guide2go /app/guide2go /usr/local/bin/guide2go
+COPY --chown=guide2go sample-config.yaml /config/sample-config.yaml
 
 RUN apt-get update && apt-get --no-install-recommends -y \
 install ca-certificates \
 && apt autoclean \
 && rm -rf /var/lib/apt/lists/*
 
+USER guide2go
 CMD [ "guide2go", "--config", "/config/config.yaml" ]
