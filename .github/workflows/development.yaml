@@ -10,7 +10,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Build the Docker image
-        working-directory: ./$GITHUB_WORKSPACE
+        working-directory: ./${{ env.GITHUB_WORKSPACE }}
         run: |
           new_tag=$(date +%s)
           docker build . --file Dockerfile --tag chuchodavids/guide2go:"$new_tag" --tag chuchodavids/guide2go:development
