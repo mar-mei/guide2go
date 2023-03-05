@@ -7,7 +7,7 @@ RUN go mod init main
 RUN go get
 RUN go build -o guide2go
 
-FROM golang:alpine3.10
+FROM alpine:3.17.2
 ENV USER=docker
 ENV UID=12345
 ENV GID=23456
@@ -23,14 +23,10 @@ RUN adduser \
     "$USER"
 
 RUN mkdir /app
-RUN chown ${USER} /app
+RUN chown ${USER} -R /app
 WORKDIR /app
-COPY --from=builder --chown="${USER}" /app/guide2go /usr/local/bin/guide2go
-COPY --chown="${USER}" sample-config.yaml /app/sample-config.yaml
+COPY --from=builder --chown="${USER}":"${GID}" /app/guide2go /usr/local/bin/guide2go
+COPY --chown="${USER}":"${GID}" sample-config.yaml /app/sample-config.yaml
 
-# RUN apt-get update && apt-get --no-install-recommends -y \
-# install ca-certificates \
-# && apt autoclean \
-# && rm -rf /var/lib/apt/lists/*
 USER "${USER}"
 CMD [ "guide2go", "--config", "/app/config.yaml" ]
