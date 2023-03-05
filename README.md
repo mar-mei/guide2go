@@ -30,22 +30,18 @@ Guide2Go is written in Go and creates an XMLTV file from the Schedules Direct JS
 ## Installation
 ### Build binary
 The following command must be executed with the terminal / command prompt inside the source code folder.  
-Linux, Unix, OSX:
-```
-go build -o guide2go
-```
-Windows:
 
 ```
-go build -o guide2go.exe
+go mod init main
+go get
+go build -o guide2go
+
 ```
+
 ### Docker
 Download the docker image:
 
-#### Volumes
-
-- /data/images  --  Path where images will be cached. It has to be the same that was declared in the Environment variables
-- /data/livetv -- optional --  If you want to save the files in a directory that other applications will have access to. (shared folder)
+docker pull chuchodavids/guide2go:stable
 
 **Stable:**
 
@@ -67,14 +63,10 @@ services:
       environment:
         - TZ: America/Chicago
       volumes:
-        - /data/config/guide2go:/config
-        - /data/livetv/:/data/livetv/
-        - /data/images:/data/images/
+        - /YOU_APP_PATH/guide2go:/app
+        - /YOUR_IMAGE_PATH:/app/images
       restart: always
 ```
-
-Switch -o creates the binary *guide2go* in the current folder.
-
 
 ### Show CLI parameter:  
 ```guide2go -h```
@@ -97,15 +89,6 @@ If the configuration file does not exist, a YAML configuration file is created.
 **Configuration file from version 1.0.6 or earlier is not compatible.**  
 ##### Terminal Output:
 ```
-2020/05/07 12:00:00 [G2G  ] Version: 1.1.2
-2020/05/07 12:00:00 [URL  ] https://json.schedulesdirect.org/20141201/token
-2020/05/07 12:00:01 [SD   ] Login...OK
-
-2020/05/07 12:00:01 [URL  ] https://json.schedulesdirect.org/20141201/status
-2020/05/07 12:00:01 [SD   ] Account Expires: 2020-11-2 14:08:12 +0000 UTC
-2020/05/07 12:00:01 [SD   ] Lineups: 4 / 4
-2020/05/07 12:00:01 [SD   ] System Status: Online [No known issues.]
-2020/05/07 12:00:01 [G2G  ] Channels: 214
 
 Configuration [MY_CONFIG_FILE.yaml]
 -----------------------------
@@ -133,7 +116,9 @@ Remove Lineup from the Schedules Direct account.
 Selection of the channels to be used.
 All selected channels are merged into one XML file when the XMLTV file is created.
 When using all channels from all lineups it is recommended to create a separate Guide2Go configuration file for each lineup.  
+
 **Example:**  
+
 Lineup 1:
 ```
 guide2go -configure Config_Lineup_1.yaml
@@ -185,10 +170,10 @@ Station:
 **- Account: (Don't change)**  
 Schedules Direct Account data, do not change them in the configuration file.  
 
-**- Flies: (Can be customized)**
+**- Files: (Can be customized)**
 ```yaml
-Cache: /data/livetv/file.json  
-XMLTV: /data/livetv/file.xml  
+Cache: /app/file.json  
+XMLTV: /app/file.xml  
 ```
 
 **- Options: (Can be customized)**  
