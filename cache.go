@@ -578,7 +578,10 @@ func GetImageUrl(urlid string, token string, name string) {
 	if a, err := os.Stat(filename); err != nil || a.Size() < 500 {
 		file, _ := os.Create(filename)
 		defer file.Close()
-		req, _ := http.Get(url)
+		req, err := http.Get(url)
+		if err != nil {
+		    return
+		}
 		defer req.Body.Close()
 		io.Copy(file, req.Body)
 		info, _ := os.Stat(filename)
