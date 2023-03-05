@@ -27,7 +27,6 @@ RUN chown ${USER} /app
 WORKDIR /app
 COPY --from=builder --chown="${USER}" /app/guide2go /usr/local/bin/guide2go
 COPY --chown="${USER}" sample-config.yaml /app/sample-config.yaml
-COPY --chown="${USER}" config.yaml /app/config.yaml
 
 # RUN apt-get update && apt-get --no-install-recommends -y \
 # install ca-certificates \
