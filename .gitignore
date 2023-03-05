@@ -10,3 +10,4 @@ dev
 a.yaml
 *.json
 *.iml
+config.yaml
