@@ -2,15 +2,15 @@ Account:
     Username: 
     Password: 
 Files:
-    Cache: /config/cache.json
-    XMLTV: /config/xml.xml
+    Cache: /app/cache.json
+    XMLTV: /app/xml.xml
 Options:
     Poster Aspect: 3x4
     Schedule Days: 1
     Subtitle into Description: false
     Insert credits tag into XML file: false
     Local Images Cache: true
-    Images Path: /data/images
+    Images Path: /app/images
     Proxy Images: false
     Hostname: localhost:9090
     Rating:
